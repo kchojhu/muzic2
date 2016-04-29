@@ -6,7 +6,7 @@ import { Component, AfterViewInit, ViewChild } from 'angular2/core';
 @Component({
     selector: 'app',
     template: `
-    Hello
+    Hello123
   `
 })
 export class App {
