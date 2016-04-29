@@ -2,17 +2,18 @@
 
 import { bootstrap } from 'angular2/platform/browser';
 import { Component, AfterViewInit, ViewChild } from 'angular2/core';
+
 @Component({
     selector: 'app',
     template: `
-Hello 12345...wow this is cool
+    Hello
   `
 })
-export class App{
+export class App {
+    
     constructor() {
         console.log('created App');
     }
-
 }
 
 bootstrap(App, []).catch(err => console.error(err));
