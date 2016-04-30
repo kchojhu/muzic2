@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+<title>FN1</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport"
+	content="width=device-width, minimum-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="stylesheet" type="text/css" href="css/app.css">
+</head>
+<body>
+	<app></app>
+
+	<script src="node_modules/es6-shim/es6-shim.min.js"></script>
+	<script src="node_modules/systemjs/dist/system-polyfills.js"></script>
+	<script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
+	<script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
+	<script src="node_modules/systemjs/dist/system.js"></script>
+	<script src="node_modules/lodash/lodash.min.js"></script>
+	<script src="node_modules/rxjs/bundles/Rx.min.js"></script>
+	<script src="node_modules/angular2/bundles/angular2.dev.js"></script>
+	<script src="node_modules/angular2/bundles/http.dev.js"></script>
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="node_modules/gsap/src/minified/jquery.gsap.min.js"></script>
+	<script src="node_modules/gsap/src/minified/TweenMax.min.js"></script>
+	<script>
+		$(function() {
+			var tag = document.createElement('script');
+			tag.src = "//www.youtube.com/iframe_api";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			app= $('#app');
+			main= $('#main');
+			left1 = $('#left1');
+			main.width($(window).width());
+			console.log('what?');
+			
+		});
+
+		var time = 0.6;
+		
+		function showLeft() {
+			TweenMax.to(app, time, {'margin-left':'+=200', ease:Power2.easeOut});
+		}
+		
+		function hideLeft() {
+			TweenMax.to(app, time, {'margin-left': '-=200', ease:Power2.easeOut});
+		}
+		
+		function upLeft() {
+			TweenMax.to(left1, time, {'y':'-=' + $(window).height()});
+		}
+		
+		function downLeft() {
+			TweenMax.to(left1, time, {'y':'+=' + $(window).height()});
+		}		
+		
+		onYouTubeIframeAPIReady = function() {
+			console.log('hello');
+			System.config({
+				packages : {
+					app : {
+						format : 'register',
+						defaultExtension : 'js'
+					}
+				}
+			});
+			System.import('app/App').then(null, console.error.bind(console));
+
+			/*         this.player = new YT.Player('player', {
+			 width: $(window).width(),
+			 height: Math.ceil(width / ratio),
+			 videoId: 'YmC53o2_gWk',
+			 playerVars: {
+			 controls: 0,
+			 showinfo: 0,
+			 modestbranding: 1,
+			 disablekb: 1,
+			 cc_load_policy: 0,
+			 iv_load_policy: 3,
+			 origin: "http://www.fn1.co/",
+			 playsinline: 1,
+			 fs: 1,
+			 rel: 0,
+			 wmode: "transparent"
+			 },
+			 events: {
+			 'onStateChange': this.onPlayerStateChange.bind(this)
+			 }
+			 }); */
+		};
+	</script>
+</body>
+</html>

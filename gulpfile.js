@@ -35,7 +35,8 @@ gulp.task('serve', function() {
 			proxy: 'localhost:8080',
 			port: 4000,
 			reloadDelay:500,
-			browser: 'firefox',
+			files:['src/main/webapp/css/*.css'],
+//			browser: 'firefox',
 			logLevel: 'debug',
 			injectChange: true,
 			logFileChange: true,
@@ -49,7 +50,7 @@ gulp.task('serve', function() {
 	browserSync(options);
 	
 	//gulp.watch([].concat.apply(config.indexFile), browserSync.reload);
-	gulp.watch(['src/main/webapp/index.html', 'src/main/webapp/app/**/*.js', 'target/classes/**/*.class', 'target/classes/**/*.js'], function() {
+	gulp.watch(['src/main/webapp/index.html', 'src/main/webapp/app/**/*.js', 'target/classes/**/*.class'], function() {
 		browserSync.reload({stream:false});
 	});
 });
