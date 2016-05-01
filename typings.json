@@ -1,5 +1,8 @@
 {
   "name": "muzic",
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {},
+  "ambientDependencies": {
+    "greensock": "github:DefinitelyTyped/DefinitelyTyped/greensock/greensock.d.ts#56295f5058cac7ae458540423c50ac2dcf9fc711"
+  }
 }

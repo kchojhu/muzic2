@@ -1,5 +1,5 @@
 
-html, body, #app, #main, #left1, #right1, #left2, #left1A, #left1B {
+html, body, #app, #youtubeContainer, #left1, #right1, #left2, #left1A, #left1B {
 	height: 100%;
 	margin: 0;
 	padding: 0;	
@@ -18,15 +18,16 @@ body {
 	width: 5000px;
 }
 /*	margin-left: -50px;*/
-#main, #left1, #right1 {
+#youtubeContainer, #left1, #right1 {
 	display: inline-block;
 }
 
 
 	/*border: 5px solid red;*/
-#main {
+#youtubeContainer {
 	float: left;
 	min-width: 50x;
+	width: 50;
 	background: gray;
 }
 

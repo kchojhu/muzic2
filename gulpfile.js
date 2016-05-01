@@ -34,7 +34,7 @@ gulp.task('serve', function() {
 	var options = {
 			proxy: 'localhost:8080',
 			port: 4000,
-			reloadDelay:500,
+			reloadDelay:1000,
 			files:['src/main/webapp/css/*.css'],
 //			browser: 'firefox',
 			logLevel: 'debug',

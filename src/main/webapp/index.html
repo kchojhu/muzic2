@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="css/app.css">
 </head>
 <body>
-	<app></app>
+	<div id="app" app></div>
 
 	<script src="node_modules/es6-shim/es6-shim.min.js"></script>
 	<script src="node_modules/systemjs/dist/system-polyfills.js"></script>
@@ -30,15 +30,15 @@
 			tag.src = "//www.youtube.com/iframe_api";
 			var firstScriptTag = document.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-			app= $('#app');
+/* 			app= $('#app');
 			main= $('#main');
 			left1 = $('#left1');
 			main.width($(window).width());
-			console.log('what?');
+			console.log('what?'); */
 			
 		});
 
-		var time = 0.6;
+/* 		var time = 0.6;
 		
 		function showLeft() {
 			TweenMax.to(app, time, {'margin-left':'+=200', ease:Power2.easeOut});
@@ -54,7 +54,7 @@
 		
 		function downLeft() {
 			TweenMax.to(left1, time, {'y':'+=' + $(window).height()});
-		}		
+		}		 */
 		
 		onYouTubeIframeAPIReady = function() {
 			console.log('hello');
