@@ -2,16 +2,16 @@ import { Component, AfterViewInit, ElementRef, Output, EventEmitter} from 'angul
 import { Transition } from '../service/Transition.service';
 
 @Component({
-    selector: '[youtubeContainer]',
+    selector: '[playListContainer]',
     template: `
-        <a href="#right" (click)="transitionTo()">Right</a>
+        <a href="#left" (click)="transitionTo()">Left</a>
   `
 })
-export class YoutubeContainer implements AfterViewInit{
-    @Output() transitionEventEmitter:EventEmitter<ElementRef> = new EventEmitter<ElementRef>();
+export class PlayListContainer implements AfterViewInit{
+   @Output() transitionEventEmitter:EventEmitter<ElementRef> = new EventEmitter<ElementRef>(); 
     
     constructor(private element:ElementRef, private transition:Transition ) {
-        console.log('created Youtube Container');
+        console.log('created PlayList Container');
     }
     
     transitionTo() {
