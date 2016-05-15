@@ -22,20 +22,38 @@ import { Transition } from './service/Transition.service';
   `
 })
 export class App {
-    
+
     private _element: any;
-    
-    constructor(private _elementRef:ElementRef, private transition:Transition ) {
+
+    constructor(private _elementRef: ElementRef, private transition: Transition) {
         this._element = $(_elementRef.nativeElement);
         console.log('created App');
     }
 
-    transitionEvent(elementRef:ElementRef) {
-        console.log('ok');
+    transitionEvent(elementRef: ElementRef) {
+
         if (elementRef.nativeElement.id === 'youtubeContainer') {
-            TweenMax.to(this._element, 0.6, {'margin-left': '-=200', ease:Power2.easeOut});            
-        } else if (elementRef.nativeElement.id === 'playListContainer') {
-            TweenMax.to(this._element, 0.6, {'margin-left': '+=200', ease:Power2.easeOut});            
+
+            if (elementRef.nativeElement.direction === 'right') {
+                if (elementRef.nativeElement.currentMode === 'self') {
+                    TweenMax.to(this._element, 0.6, { 'margin-left': '-=200', ease: Power2.easeOut });
+                    elementRef.nativeElement.currentMode = 'right';
+                } else if (elementRef.nativeElement.currentMode = 'right') {
+                    TweenMax.to(this._element, 0.6, { 'margin-left': '+=200', ease: Power2.easeOut });
+                    elementRef.nativeElement.currentMode = 'self';
+                }
+            }
+
+            if (elementRef.nativeElement.direction === 'left') {
+                if (elementRef.nativeElement.currentMode === 'self') {
+                    TweenMax.to(this._element, 0.6, { 'margin-left': '+=200', ease: Power2.easeOut });
+                    elementRef.nativeElement.currentMode = 'left';
+                } else if (elementRef.nativeElement.currentMode = 'left') {
+                    TweenMax.to(this._element, 0.6, { 'margin-left': '-=200', ease: Power2.easeOut });
+                    elementRef.nativeElement.currentMode = 'self';
+                }
+            }
+
         }
 
     }
