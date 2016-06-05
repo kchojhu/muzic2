@@ -10,6 +10,7 @@ html, body, #app, #youtubeContainer, #left1, #right1, #left2, #left1A, #left1B {
 body {
 	background: #000;
 	color: #fff;
+    overflow: hidden;
 }
 
 .ytp-large-play-button .ytp-button {

@@ -1,8 +1,10 @@
-import { Component, AfterViewInit, ElementRef, Output, EventEmitter} from 'angular2/core';
+import { Component, AfterViewInit, ElementRef, Output, EventEmitter} from '@angular/core';
 import { Transition } from '../service/Transition.service';
+import { YoutubeService} from '../service/Youtube.service';
 
 declare var YT: any;
 declare var $: any;
+declare var _: any;
 
 @Component({
     selector: '[youtubeContainer]',
@@ -20,7 +22,7 @@ export class YoutubeContainer implements AfterViewInit {
     private player: any;
     private playerEl: any;
 
-    constructor(private element: ElementRef, private transition: Transition) {
+    constructor(private element: ElementRef, private transition: Transition, private youtubeService: YoutubeService) {
         element.nativeElement.currentMode = 'self';
         console.log('created Youtube Container');
     }
@@ -37,7 +39,7 @@ export class YoutubeContainer implements AfterViewInit {
 
     onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
-
+            console.log('playing');
         }
         if (event.data === YT.PlayerState.ENDED) {
             //       this.playNext();
@@ -46,11 +48,12 @@ export class YoutubeContainer implements AfterViewInit {
         }
     }
     resizeWindow() {
+        console.log('resize');
         let pHeight, pWidth;
         let width = $(window).width();
         let height = $(window).height();
         let ratio = 16 / 9;
-
+        debugger;
         if (width / ratio < height) {
             pWidth = Math.ceil(height * ratio);
             return this.playerEl.width(pWidth).height(height).css({
@@ -69,9 +72,18 @@ export class YoutubeContainer implements AfterViewInit {
 
     ngAfterViewInit() {
         this.focus();
+        this.youtubeService.getSongs({name: 'Korean', value: 'Korean'}).subscribe(songs => {
+            console.log('music loaded');
+//         let songIndex = 0;
+//         _.each(songs, (song) => song.songIndex = songIndex++);
+//         this.songs = songs;
+//            
+//         this.currentSong = songs[0];
+//         this.currentSong.isSelected = true;  
+        }, err => console.log(err));            
+            
         this.player = new YT.Player('player', {
-            width: 100,
-            height: 100,
+            width: $(window).width(),
             videoId: 'QDiJU9GZrnA',
             playerVars: {
                 controls: 0,

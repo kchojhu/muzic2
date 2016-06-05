@@ -1,15 +1,17 @@
-///<reference path="../../../../node_modules/angular2/typings/browser.d.ts"/>
+import { bootstrap } from "@angular/platform-browser-dynamic";
+import { Component, ElementRef } from "@angular/core";
 
-import { bootstrap } from 'angular2/platform/browser';
-import { Component, AfterViewInit, ViewChild, ElementRef } from 'angular2/core';
-import {YoutubeContainer} from './youtube/YoutubeContainer.component';
-import {PlayListContainer} from './playlist/PlayListContainer.component';
-import { Transition } from './service/Transition.service';
+ import {YoutubeContainer} from './youtube/YoutubeContainer.component';
+ import {PlayListContainer} from './playlist/PlayListContainer.component';
+ import { Transition } from './service/Transition.service';
+ import { YoutubeService } from './service/Youtube.service';
+ import { ApplicationUtil } from './service/ApplicationUtil.service';
+ import { HTTP_PROVIDERS} from '@angular/http';
 
 
 @Component({
     selector: '[app]',
-    providers: [Transition],
+    providers: [Transition, YoutubeService, HTTP_PROVIDERS, ApplicationUtil],
     directives: [YoutubeContainer, PlayListContainer],
     template: `
         <div id="left2">Left 2</div>

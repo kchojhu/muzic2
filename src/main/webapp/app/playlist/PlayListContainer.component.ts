@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, Output, EventEmitter} from 'angular2/core';
+import { Component, AfterViewInit, ElementRef, Output, EventEmitter} from '@angular/core';
 import { Transition } from '../service/Transition.service';
 
 @Component({

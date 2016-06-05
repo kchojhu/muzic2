@@ -1,0 +1,44 @@
+{
+  "name": "muzic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kchojhu/muzic.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kchojhu/muzic/issues"
+  },
+  "homepage": "https://github.com/kchojhu/muzic#readme",
+  "devDependencies": {
+    "angular": "2.0.0-rc.1",
+    "bootstrap": "^3.3.6",
+    "browser-sync": "^2.11.1",
+    "del": "^2.2.0",
+    "es6-promise": "^3.1.2",
+    "es6-shim": "^0.35.0",
+    "glob": "^7.0.3",
+    "gulp": "^3.9.1",
+    "gulp-load-plugins": "^1.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-task-listing": "^1.0.1",
+    "gulp-typescript": "^2.12.2",
+    "gulp-util": "^3.0.7",
+    "jquery": "^2.2.2",
+    "lodash": "^4.6.1",
+    "path": "^0.12.7",
+    "reflect-metadata": "^0.1.2",
+    "rx": "^4.1.0",
+    "rxjs": "^5.0.0-beta.6",
+    "systemjs": "^0.19.24",
+    "yargs": "^4.3.2",
+    "zone.js": "~0.6.6"
+  }
+}

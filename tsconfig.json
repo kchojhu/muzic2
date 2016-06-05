@@ -13,9 +13,10 @@
   "exclude": [
     "node_modules",
     "src/main/webapp/node_modules",
-    "src/main/webapp/node_modules/angular2",
     "typings/main",
     "typings/main.d.ts",
+	"typings/browser",
+    "typings/browser.d.ts",
     "target"
   ]
 }
