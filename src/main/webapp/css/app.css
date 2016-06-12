@@ -13,6 +13,11 @@ body {
     overflow: hidden;
 }
 
+#player {
+	position: absolute;
+	z-index: 1;
+}
+
 .ytp-large-play-button .ytp-button {
    fill: red !important;   
 }
@@ -20,7 +25,8 @@ body {
 .navButton {
 	font-family: FontAwesome;
 	color: white;
-	font-size: 2.5rem;
+/*	font-size: 2.5rem;*/
+    font-size: 5rem;
 	background-color: black;
 	opacity: 0.5;
 	text-shadow: 2px 2px 0 #000;
@@ -29,6 +35,7 @@ body {
 	text-align: center;
 	border-radius: 5px;
 	padding: 0.5rem;
+	z-index: 999;
 }
     
 .rightNav {
@@ -42,41 +49,78 @@ body {
 #app {
 	white-space: nowrap;
 	overflow: hidden;
-	margin-left: -400px;
+/*	margin-left: -400px; */
 	width: 5000px;
 }
 /*	margin-left: -50px;*/
-#youtubeContainer, #left1, #right1 {
+/*#youtubeContainer, #songListsContainer, #right1 {
 	display: inline-block;
-}
+}*/
 
+#playerContainer {
+	overflow: hidden;
+	position: fixed;
+	width: 100%;
+	height: 100%
+}
 
 	/*border: 5px solid red;*/
 #youtubeContainer {
 	float: left;
-	min-width: 50x;
 	width: 50;
-	background: gray;
 	position:relative;
 }
 
-#left1 {
+#songListsContainer {
 	float: left;
-	width: 200px;
-	background: maroon;
+	min-width: 400px;
+    width: 400px;
+	background: #111111;
 }
-#left1B {
+/* #left1B {
 	background: orange;
 }
-
-#left2 {
+ */
+/* #left2 {
 	float: left;
 	width: 200px;
 	background: teal;
-}
+} */
 
-#right1 {
+/* #right1 {
 	width: 2000px;
 	float: left;
 	background: navy;
+} */
+
+fieldset {
+    width:70%;
+    margin: 1em;
+    background:transparent;
+    border:2px solid 0066cc;
+    border-radius:5px;
+    padding:20px;
+    position:relative;
+}
+legend {
+    font-weight:bold;
+    position:absolute;
+    left:10px;
+    top:-1.1em;
+    height:2em;
+    line-height:2em;
+    padding:0 10px;
+}
+legend:after {
+    position:absolute;
+    content:" ";
+    height:3px;
+    left:0;
+    right:0;
+    top:49%;
+    background:black;
+}
+legend b {
+    position:relative;
+    z-index:2;
 }

@@ -4,27 +4,23 @@ import { Transition } from '../service/Transition.service';
 @Component({
     selector: '[playListContainer]',
     template: `
-        <a href="#left" (click)="transitionTo()">Left</a>
+        blah
   `
 })
-export class PlayListContainer implements AfterViewInit{
-   @Output() transitionEventEmitter:EventEmitter<ElementRef> = new EventEmitter<ElementRef>(); 
-    
-    constructor(private element:ElementRef, private transition:Transition ) {
+export class PlayListContainer implements AfterViewInit {
+    @Output() transitionEventEmitter: EventEmitter<ElementRef> = new EventEmitter<ElementRef>();
+
+    constructor(private element: ElementRef, private transition: Transition) {
         console.log('created PlayList Container');
     }
-    
-    transitionTo() {
-        console.log('transition event');
-        this.transitionEventEmitter.emit(this.element);
+
+    getElement(): ElementRef {
+        return this.element;
     }
-    
-    focus() {
-        this.transition.focusComponent(this.element);
-    }
-    
+
+
     ngAfterViewInit() {
-          this.focus();
+
     }
 
 }

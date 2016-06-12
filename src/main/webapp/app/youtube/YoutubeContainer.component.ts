@@ -10,9 +10,11 @@ declare var _: any;
     selector: '[youtubeContainer]',
     template: `
     <div>
-    <a class="navButton leftNav" href="#youtubeContainerLeft" (click)="transitionTo('left')">&#xf039;</a>
-    <a class="navButton rightNav" href="#youtubeContainerRight" (click)="transitionTo('right')">&#xf0cb;</a>
-    <div id="player"></div>
+    <a class="navButton" href="#songListsContainer" (click)="transitionTo($event)">&#xf039;</a>
+    <a class="navButton rightNav" href="#playListContainer" (click)="transitionTo($event)">&#xf0cb;</a>
+    <div id="playerContainer">
+        <div id="player"></div>
+    </div>
     </div>
   `
 })
@@ -22,24 +24,32 @@ export class YoutubeContainer implements AfterViewInit {
     private player: any;
     private playerEl: any;
 
+    getElement(): ElementRef {
+        return this.element;
+    }
+
     constructor(private element: ElementRef, private transition: Transition, private youtubeService: YoutubeService) {
         element.nativeElement.currentMode = 'self';
         console.log('created Youtube Container');
     }
 
-    transitionTo(direction:String) {
+    transitionTo(event: any) {
         console.log('transition event');
-        this.element.nativeElement.direction = direction;
-        this.transitionEventEmitter.emit(this.element);
+
+        if (!event.srcElement.origHash) {
+            event.srcElement.origHash = event.srcElement.hash;
+        } else {
+            event.srcElement.hash = ('#' + this.element.nativeElement.id === event.srcElement.hash ? event.srcElement.origHash : '#' + this.element.nativeElement.id);
+        }
+
     }
 
-    focus() {
-        this.transition.focusComponent(this.element);
-    }
 
     onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
             console.log('playing');
+
+
         }
         if (event.data === YT.PlayerState.ENDED) {
             //       this.playNext();
@@ -48,42 +58,48 @@ export class YoutubeContainer implements AfterViewInit {
         }
     }
     resizeWindow() {
+        // if (location.hash !== '#' + this.element.nativeElement.id) {
+        //     return;
+        // }
         console.log('resize');
+        let width = $(window).width();        
         let pHeight, pWidth;
-        let width = $(window).width();
         let height = $(window).height();
-        let ratio = 16 / 9;
-        debugger;
+        let ratio: number = 16 / 9;
         if (width / ratio < height) {
             pWidth = Math.ceil(height * ratio);
-            return this.playerEl.width(pWidth).height(height).css({
+            console.log('pWidth:' +  pWidth)
+            this.playerEl.width(pWidth).height(height).css({
                 left: (width - pWidth) / 2,
                 top: 0
             });
         } else {
             pHeight = Math.ceil(width / ratio);
-            return this.playerEl.width(width).height(pHeight).css({
+            this.playerEl.width(width).height(pHeight).css({
                 left: 0,
                 top: (height - pHeight) / 2
             });
         }
+        this.element.nativeElement.style.setProperty('width', width + 'px');
+        
 
     }
 
     ngAfterViewInit() {
-        this.focus();
-        this.youtubeService.getSongs({name: 'Korean', value: 'Korean'}).subscribe(songs => {
+        this.youtubeService.getSongs({ name: 'Korean', value: 'Korean' }).subscribe(songs => {
             console.log('music loaded');
-//         let songIndex = 0;
-//         _.each(songs, (song) => song.songIndex = songIndex++);
-//         this.songs = songs;
-//            
-//         this.currentSong = songs[0];
-//         this.currentSong.isSelected = true;  
-        }, err => console.log(err));            
-            
+            //         let songIndex = 0;
+            //         _.each(songs, (song) => song.songIndex = songIndex++);
+            //         this.songs = songs;
+            //            
+            //         this.currentSong = songs[0];
+            //         this.currentSong.isSelected = true;  
+        }, err => console.log(err));
+        let width = $(window).width();
+        let ratio: number = 16 / 9;
         this.player = new YT.Player('player', {
-            width: $(window).width(),
+            width: width,
+            height: Math.ceil(width / ratio), 
             videoId: 'QDiJU9GZrnA',
             playerVars: {
                 controls: 0,
@@ -105,7 +121,6 @@ export class YoutubeContainer implements AfterViewInit {
         this.playerEl = $("#player");
         $(window).on('resize', () => this.resizeWindow());
         this.resizeWindow();
-
     }
 
 }
