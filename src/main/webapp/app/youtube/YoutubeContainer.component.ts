@@ -10,8 +10,8 @@ declare var _: any;
     selector: '[youtubeContainer]',
     template: `
     <div>
-    <a class="navButton" href="#songListsContainer" (click)="transitionTo($event)">&#xf039;</a>
-    <a class="navButton rightNav" href="#playListContainer" (click)="transitionTo($event)">&#xf0cb;</a>
+    <a id="leftNavButton" class="navButton" href="#songListsContainer" (click)="transitionTo($event)">&#xf039;</a>
+    <a id="rightNavButton" class="navButton rightNav" href="#playListContainer" (click)="transitionTo($event)">&#xf0cb;</a>
     <div id="playerContainer">
         <div id="player"></div>
     </div>
@@ -34,13 +34,13 @@ export class YoutubeContainer implements AfterViewInit {
     }
 
     transitionTo(event: any) {
-        console.log('transition event');
+        // console.log('transition event');
 
-        if (!event.srcElement.origHash) {
-            event.srcElement.origHash = event.srcElement.hash;
-        } else {
-            event.srcElement.hash = ('#' + this.element.nativeElement.id === event.srcElement.hash ? event.srcElement.origHash : '#' + this.element.nativeElement.id);
-        }
+        // if (!event.srcElement.origHash) {
+        //     event.srcElement.origHash = event.srcElement.hash;
+        // } else {
+        //     event.srcElement.hash = ('#' + this.element.nativeElement.id === event.srcElement.hash ? event.srcElement.origHash : '#' + this.element.nativeElement.id);
+        // }
 
     }
 
@@ -86,15 +86,9 @@ export class YoutubeContainer implements AfterViewInit {
     }
 
     ngAfterViewInit() {
-        this.youtubeService.getSongs({ name: 'Korean', value: 'Korean' }).subscribe(songs => {
-            console.log('music loaded');
-            //         let songIndex = 0;
-            //         _.each(songs, (song) => song.songIndex = songIndex++);
-            //         this.songs = songs;
-            //            
-            //         this.currentSong = songs[0];
-            //         this.currentSong.isSelected = true;  
-        }, err => console.log(err));
+        // this.youtubeService.getSongs({ name: 'Korean', value: 'Korean' }).subscribe(songs => {
+        //     console.log('music loaded');
+        // }, err => console.log(err));
         let width = $(window).width();
         let ratio: number = 16 / 9;
         this.player = new YT.Player('player', {

@@ -5,15 +5,11 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-
-
-public class Songs extends JsonResponse implements Serializable{
+public class Songs extends JsonResponse implements Serializable {
 	private List<Song> songs = Lists.newArrayList();
 
 	private String dummyText = "phuongtm";
-	
-	
-	
+
 	public String getDummyText() {
 		return dummyText;
 	}
@@ -29,19 +25,16 @@ public class Songs extends JsonResponse implements Serializable{
 	public void setSongs(List<Song> songs) {
 		this.songs = songs;
 	}
-	
-	
+
 	@Override
 	public String toString() {
 		StringBuffer stringBuffer = new StringBuffer();
-		
+
 		songs.forEach(song -> {
 			stringBuffer.append("\n" + song.toString());
 		});
-		
+
 		return stringBuffer.toString();
 	}
-	
 
-	
 }

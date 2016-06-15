@@ -12,6 +12,8 @@ export class Transition {
     private transitionType : Ease = Power2.easeOut;
     private elementPositions : Array<ElementRef>;
     private app: App;
+    private leftNavButton: JQuery;
+    private rightNavButton: JQuery;
      
     constructor() {
         this.elementPositions = new Array<ElementRef>();
@@ -43,41 +45,36 @@ export class Transition {
     }
         
     focusComponent(elementRef:ElementRef) {
+        this.leftNavButton = this.leftNavButton ? this.leftNavButton : $('#leftNavButton');
+        this.rightNavButton = this.rightNavButton ? this.rightNavButton : $('#rightNavButton');
         console.log('focus');
         console.log(elementRef);
         this.currentElement = this.currentElement ? this.currentElement: elementRef;  
          
         let offsetX = 0;
-        for (let i = 0; i < this.elementPositions.length; i++) {
+        let i = 0;
+        for (i = 0; i < this.elementPositions.length; i++) {
             if (this.elementPositions[i].nativeElement.id !== elementRef.nativeElement.id) {
                 offsetX += $(this.elementPositions[i].nativeElement).width();
             } else {
                 break;
             }
-        }        
+        }    
         
-        // if (elementRef.nativeElement.id === this.app.youtubeContainer.getElement().nativeElement.id) {
-        //     this.app.youtubeContainer.resizeWindow();
-        // }
+        console.log('offsetX:' + offsetX);
+        if (i === 0) {
+            this.leftNavButton.attr('href', '#' + this.elementPositions[1].nativeElement.id);
+        } else if (i === this.elementPositions.length - 1) {
+            offsetX -= this.rightNavButton.outerWidth();
+            this.rightNavButton.attr('href', '#' + this.elementPositions[i - 1].nativeElement.id);
+        } else {
+            this.leftNavButton.attr('href', '#' + this.elementPositions[i - 1].nativeElement.id);
+            this.rightNavButton.attr('href', '#' + this.elementPositions[i + 1].nativeElement.id);
+        }
         
-         
-//         let offsetX = elementRef.nativeElement.offsetLeft;
-         console.log('offsetX:' + offsetX);
-         //              'margin-left': '-=' + offsetY,
          TweenMax.to(this.appElement.nativeElement, this.transitionPeriod, {
              'margin-left': offsetX *  -1,
              ease: this.transitionType
          })
-         
-//         TweenMax.to(this.appElement)
-         
-         
-         
-         
-        
-        // let element = $(elementRef.nativeElement);
-        // if (!width) {
-        //     element.width($(window).width());
-        // }
     }
 }

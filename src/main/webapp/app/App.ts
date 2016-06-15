@@ -7,6 +7,7 @@ import {SongListContainer} from './songlist/SongListContainer.component';
 import { Transition } from './service/Transition.service';
 import { YoutubeService } from './service/Youtube.service';
 import { ApplicationUtil } from './service/ApplicationUtil.service';
+import { MusicRequest } from './model/MusicRequest';
 import { HTTP_PROVIDERS} from '@angular/http';
 import { } from '@angular/router';
 
@@ -15,9 +16,9 @@ import { } from '@angular/router';
     providers: [Transition, YoutubeService, HTTP_PROVIDERS, ApplicationUtil],
     directives: [SongListContainer, YoutubeContainer, PlayListContainer],
     template: `
-        <div id="songListsContainer" songListsContainer></div>
-        <div id="youtubeContainer" youtubeContainer (transitionEventEmitter)="transitionEvent($event)" ></div>
-        <div id="playListContainer" playListContainer (transitionEventEmitter)="transitionEvent($event)"></div>
+        <div id="songListsContainer" songListsContainer (musicRequestEmitter)="retrievePlayList($event)"></div>
+        <div id="youtubeContainer" youtubeContainer ></div>
+        <div id="playListContainer" playListContainer ></div>
   `
 })
 export class App {
@@ -25,6 +26,10 @@ export class App {
     @ViewChild(SongListContainer) songListContainer: SongListContainer;
     @ViewChild(YoutubeContainer) youtubeContainer: YoutubeContainer;
     @ViewChild(PlayListContainer) playListContainer: PlayListContainer;
+
+    retrievePlayList(musicRequest:MusicRequest) {
+        this.playListContainer.retrievePlayList(musicRequest);
+    }
 
     getElement(): ElementRef {
         return this.element;
@@ -37,7 +42,7 @@ export class App {
     ngAfterViewInit() {
         console.log('created App');
         this.transition.setAppElement(this);
-        location.hash = this.youtubeContainer.getElement().nativeElement.id;
+        location.hash = this.songListContainer.getElement().nativeElement.id;
     }
 
 }

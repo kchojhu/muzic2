@@ -87,11 +87,11 @@ public class MusicChartController {
 		}
 		
 		switch (country) {
-		case "Korean":
+		case "Korea":
 			return kPopService.getSongs();
-		case "American":
+		case "America":
 			return usPopService.getSongs();
-		case "Japanese":
+		case "Japan":
 			return jPopService.getSongs();
 		case "Dance":
 			return mellonService.getSongs(country);

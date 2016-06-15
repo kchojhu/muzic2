@@ -1,15 +1,13 @@
 package com.muzic.service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +17,10 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.api.client.util.Lists;
+import com.google.api.client.util.Sets;
 import com.muzic.model.Song;
 import com.muzic.model.Songs;
-import com.google.api.client.util.Lists;
 
 @Service("kPopService")
 public class KpopServiceImpl implements MusicChartSerice {
@@ -70,6 +69,8 @@ public class KpopServiceImpl implements MusicChartSerice {
 				songsList.addAll((List<Map<String, Object>>) result.get("results"));
 			}
 		}
+		
+		Set<String> songTitle = Sets.newHashSet();
 
 		Songs songs = new Songs();
 
@@ -87,7 +88,10 @@ public class KpopServiceImpl implements MusicChartSerice {
 				song.setRank(rank);
 				song.setArtistName(s.get("artist").toString().split(Pattern.quote("|"))[0]);
 				song.setSongName(s.get("title").toString());
-				songs.getSongs().add(song);
+				
+				if (!songTitle.contains(song.getSongName())) {					
+					songs.getSongs().add(song);
+				}				
 			}
 
 		});

@@ -1,14 +1,20 @@
 import { Component, AfterViewInit, ElementRef, Output, EventEmitter} from '@angular/core';
 import { Transition } from '../service/Transition.service';
+import { MusicRequest } from '../model/MusicRequest';
 
 @Component({
     selector: '[songListsContainer]',
     template: `
              <fieldset>
                 <legend><b>Top 100</b></legend>
-                <p>test</p>
-                <p>test</p>
-                <p>test</p>
+                <div class="songitems">
+                    <div *ngFor="let country of countriesTop100" class="songitem" (click)="retrievePlayList({type:'country', value:country})">
+                        <div class="songImage" >
+                        <img src="/images/flags/flags/48/{{country}}.png">
+                        </div> 
+                        <span class="caption">{{country}}</span>
+                    </div>
+                </div>
             </fieldset>
             <fieldset>
                 <legend><b>Genre</b></legend>
@@ -26,6 +32,15 @@ import { Transition } from '../service/Transition.service';
 })
 export class SongListContainer implements AfterViewInit {
 
+    @Output() musicRequestEmitter: EventEmitter<MusicRequest> = new EventEmitter<MusicRequest>();
+    private countriesTop100 : string[] = ['Korea', 'America', 'Japan'];
+
+    retrievePlayList(musicRequest: MusicRequest) {
+        console.log('music requested');
+        console.log(musicRequest);
+        this.musicRequestEmitter.emit(musicRequest);
+    }
+
     getElement() : ElementRef{
         return this.element;
     }
@@ -38,13 +53,14 @@ export class SongListContainer implements AfterViewInit {
         console.log('transition event');
 //        this.transitionEventEmitter.emit(this.element);
     }
-
-    focus() {
-        //        this.transition.focusComponent(this.element);
+    
+    resizeWindow() {
+        this.element.nativeElement.style.setProperty('height', $(window).height() + 'px');
     }
 
     ngAfterViewInit() {
-        this.focus();
+        $(window).on('resize', () => this.resizeWindow());
+        this.resizeWindow();
     }
 
 }
