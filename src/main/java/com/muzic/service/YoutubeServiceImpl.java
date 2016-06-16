@@ -80,10 +80,12 @@ public class YoutubeServiceImpl implements YoutubeService {
 	@Override
 	public Song getSong(Song song) {
 		try {
+			String songName = song.getSongName().replaceAll("\\([^\\(]*\\)", "").replaceAll("'", "").replaceAll("`", "").trim();
+			String artistName = song.getArtistName().replaceAll("\\([^\\(]*\\)", "").replaceAll("'", "").replaceAll("`", "").trim();
 			YouTube.Search.List search = youtube.search().list("id,snippet");
 			search.setKey(apiKey);
 			search.setQ(
-					StringUtils.join(Lists.newArrayList(song.getSongName(), song.getArtistName().replaceAll("\\([^\\(]*\\)", ""), musicKeywords), " "));
+					StringUtils.join(Lists.newArrayList(songName, artistName, musicKeywords), " "));
 			// search.set
 			search.setType("video");
 			//https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBdH1-L-TTl2Xf_oZGJIyIr6C2PzdY1GiU
@@ -96,9 +98,9 @@ public class YoutubeServiceImpl implements YoutubeService {
 
 			if (searchResultList != null) {				
 				for (SearchResult searchResult : searchResultList) {
-					String title = searchResult.getSnippet().getTitle();
+					String title = searchResult.getSnippet().getTitle().replaceAll("'", "").replaceAll("`", "");
 					
-					if (title.contains("노래방") || title.contains("karaoke") || title.contains("기타강의") || !title.contains(song.getSongName().replaceAll("\\([^\\(]*\\)", ""))) {
+					if (title.contains("노래방") || title.contains("karaoke") || title.contains("기타강의") || !title.toLowerCase().contains(songName.toLowerCase())) {
 						continue;
 					}
 					

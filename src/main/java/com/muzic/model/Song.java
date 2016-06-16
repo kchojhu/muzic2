@@ -59,6 +59,21 @@ public class Song implements Serializable{
 	public void setRank(Integer rank) {
 		this.rank = rank;
 	}
+	
+	@Override
+	public boolean equals(Object that) {
+		if (this == that) return true;
+		
+		if (!(that instanceof Song)) return false;
+
+		Song thatSong = (Song) that;
+		return thatSong.getSongName().equals(songName) && thatSong.getArtistName().equals(artistName);
+	}
+	
+	@Override
+	public int hashCode() {
+		return (songName + artistName).hashCode();
+	}
 
 	@Override
 	public String toString() {
