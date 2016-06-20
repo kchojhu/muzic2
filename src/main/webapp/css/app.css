@@ -243,7 +243,7 @@ div.songitem .caption {
     vertical-align: middle;
     font-size: 1rem;
 }
-
+.music-listing ol li.selected,
 .music-listing ol li:hover {
     background-color: #3a3a3a;
 }

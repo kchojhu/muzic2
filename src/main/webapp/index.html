@@ -1,24 +1,25 @@
 <!doctype html>
 <html>
+
 <head>
-<title>FN1</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="format-detection" content="telephone=no">
-<meta name="viewport"
-	content="width=device-width, minimum-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<link rel="stylesheet" type="text/css" href="css/app.css">
-<link rel="stylesheet" type="text/css" href="css/loader.css">
-<link rel="stylesheet"
-	href="http://fonts.googleapis.com/css?family=Open+Sans:600,400|Open+Sans+Condensed:600,300,300italic&amp;subset=cyrillic,latin">
-<link rel="stylesheet"
-	href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
-<!--<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
+    <title>FN1</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <link rel="stylesheet" type="text/css" href="css/loader.css">
+    <link rel="stylesheet" type="text/css" href="css/playMenu.css">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:600,400|Open+Sans+Condensed:600,300,300italic&amp;subset=cyrillic,latin">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
 <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>-->
 </head>
+
 <body>
     <div id="loaderScreen">
-        <div id ="loader" class="loader">            
+        <div id="loader" class="loader">
             <div class="side"></div>
             <div class="side"></div>
             <div class="side"></div>
@@ -28,21 +29,22 @@
             <div class="side"></div>
             <div class="side"></div>
         </div>
-	</div>
-	<div id="app" app></div>
+    </div>
+    <div id="app" app></div>
 
-	<script src="node_modules/zone.js/dist/zone.js"></script>
-	<script src="node_modules/reflect-metadata/Reflect.js"></script>
+    <script src="node_modules/zone.js/dist/zone.js"></script>
+    <script src="node_modules/reflect-metadata/Reflect.js"></script>
 
-	<!--<script src="node_modules/es6-shim/es6-shim.js"></script>-->
-	<script src="node_modules/systemjs/dist/system.js"></script>
-	<script src="node_modules/rxjs/bundles/Rx.min.js"></script>
+    <!--<script src="node_modules/es6-shim/es6-shim.js"></script>-->
+    <script src="node_modules/systemjs/dist/system.js"></script>
+    <script src="node_modules/rxjs/bundles/Rx.min.js"></script>
 
-	<script src="node_modules/lodash/lodash.min.js"></script>
-	<script src="node_modules/jquery/dist/jquery.min.js"></script>
-	<script src="node_modules/gsap/src/minified/jquery.gsap.min.js"></script>
-	<script src="node_modules/gsap/src/minified/TweenMax.min.js"></script>
-	<script src="app/resources/systemjs.config.js"></script>
+    <script src="node_modules/lodash/lodash.min.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/gsap/src/minified/jquery.gsap.min.js"></script>
+    <script src="node_modules/gsap/src/minified/TweenMax.min.js"></script>
+    <script src="js/modernizr-custom-3.3.1.js"></script>
+    <script src="app/resources/systemjs.config.js"></script>
     <!--<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>-->
 
     <!-- 	<script src="node_modules/es6-shim/es6-shim.min.js"></script>
@@ -56,8 +58,8 @@
 
 
 
-	<script>
-		$(function() {
+    <script>
+        $(function() {
 			var tag = document.createElement('script');
 			tag.src = "//www.youtube.com/iframe_api";
 			var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -77,6 +79,7 @@
             location.hash = 'init';
 			System.import('app/App').then(null, console.error.bind(console));
 		};
-	</script>
+    </script>
 </body>
+
 </html>

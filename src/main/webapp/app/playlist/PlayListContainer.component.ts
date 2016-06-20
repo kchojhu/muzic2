@@ -16,7 +16,7 @@ import { Song } from '../model/Song';
   `
 })
 export class PlayListContainer implements AfterViewInit {
-    @Output() transitionEventEmitter: EventEmitter<ElementRef> = new EventEmitter<ElementRef>();
+    @Output() youtubePlayerSongEvent: EventEmitter<Song> = new EventEmitter<Song>();
     private height:number = $(window).height();
     private songs:Song[];
 
@@ -31,7 +31,20 @@ export class PlayListContainer implements AfterViewInit {
     
     ngAfterViewInit() {
         this.onResize();
-    } 
+    }
+    
+   selectSong(selectedSong:Song) {
+       this.songs.forEach((song) => {
+           if (song.isSelected) {
+            song.isSelected = false;               
+           }
+           
+       });
+       
+       selectedSong.isSelected = true;
+        this.youtubePlayerSongEvent.next(selectedSong);
+        
+    }
 
     retrievePlayList(musicRequest: MusicRequest) {
         console.log('playlist:');

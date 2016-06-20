@@ -8,6 +8,7 @@ import { Transition } from './service/Transition.service';
 import { YoutubeService } from './service/Youtube.service';
 import { ApplicationUtil } from './service/ApplicationUtil.service';
 import { MusicRequest } from './model/MusicRequest';
+import { Song } from './model/Song';
 import { HTTP_PROVIDERS} from '@angular/http';
 import { } from '@angular/router';
 
@@ -18,7 +19,7 @@ import { } from '@angular/router';
     template: `
         <div id="songListsContainer" songListsContainer (musicRequestEmitter)="retrievePlayList($event)"></div>
         <div id="youtubeContainer" youtubeContainer ></div>
-        <div id="playListContainer" playListContainer ></div>
+        <div id="playListContainer" playListContainer (youtubePlayerSongEvent)="youtubePlayerSongEvent($event)"></div>
   `
 })
 export class App {
@@ -30,6 +31,15 @@ export class App {
     retrievePlayList(musicRequest:MusicRequest) {
         this.playListContainer.retrievePlayList(musicRequest);
     }
+    
+    youtubePlayerSongEvent(song:Song) {
+        this.youtubeContainer.play(song);
+    }
+
+  selectedSongEvent(song: Song) {
+        console.log('song emitted:' + JSON.stringify(song));
+        this.youtubeContainer.play(song);
+       }
 
     getElement(): ElementRef {
         return this.element;

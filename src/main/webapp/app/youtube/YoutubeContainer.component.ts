@@ -1,18 +1,37 @@
 import { Component, AfterViewInit, ElementRef, Output, EventEmitter} from '@angular/core';
 import { Transition } from '../service/Transition.service';
 import { YoutubeService} from '../service/Youtube.service';
+import { Song} from '../model/Song';
+
 
 declare var YT: any;
 declare var $: any;
 declare var _: any;
 
+declare var classie;
 @Component({
     selector: '[youtubeContainer]',
     template: `
     <div>
     <a id="leftNavButton" class="navButton" href="#songListsContainer" (click)="transitionTo($event)">&#xf039;</a>
     <a id="rightNavButton" class="navButton rightNav" href="#playListContainer" (click)="transitionTo($event)">&#xf0cb;</a>
+    </div>
     <div id="playerContainer">
+        <div id="playListMenu">
+            <div class="component csstransforms">
+                <button class="cn-button" id="cn-button">Menu</button>
+                <div class="cn-wrapper" id="cn-wrapper">
+                    <ul>
+                        <li><a href="#"><span>&#xf1f8;</span></a></li>
+                        <li><a href="#"><span>&#xf01e;</span></a></li>
+                        <li><a href="#"><span>&#xf04a;</span></a></li>
+                        <li (click)="playPauseButton($event)"><a href="#" ><span [innerHTML]="playPauseString"></span></a></li>
+                        <li><a href="#"><span>&#xf04e;</span></a></li>
+                        <li><a href="#"><span>&#xf074;</span></a></li>
+                        <li><a href="#"><span>&#xf129;</span></a></li>
+                    </ul>
+                </div>
+         </div>
         <div id="player"></div>
     </div>
     </div>
@@ -21,8 +40,22 @@ declare var _: any;
 export class YoutubeContainer implements AfterViewInit {
     @Output() transitionEventEmitter: EventEmitter<ElementRef> = new EventEmitter<ElementRef>();
 
+    private playPauseString: string = '&#xf04b;';
     private player: any;
     private playerEl: any;
+    private playerMenuEl: any;
+    private playerMenuButton: JQuery;
+    private playerMenuButtonWrapper: JQuery;
+    private currentSong: Song;
+    private currentMode: any;
+
+    playPauseButton(event:Event) {
+        if (this.currentMode === YT.PlayerState.PLAYING) {
+            this.player.pauseVideo();
+        } else {
+            this.player.playVideo();
+        }
+    }
 
     getElement(): ElementRef {
         return this.element;
@@ -44,17 +77,33 @@ export class YoutubeContainer implements AfterViewInit {
 
     }
 
+    play(song?: Song) {
+        console.log('play:' + JSON.stringify(song));
+        
+
+        if (song) {
+            this.player.loadVideoById(song.songId);
+            this.currentSong = song;
+            return;
+        }
+
+    }
+
 
     onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
             console.log('playing');
-
+            this.currentMode = YT.PlayerState.PLAYING;
+            this.playPauseString = '&#xf04c;';
 
         }
         if (event.data === YT.PlayerState.ENDED) {
             //       this.playNext();
         }
         if (event.data === YT.PlayerState.PAUSED) {
+            this.currentMode = YT.PlayerState.PAUSED;
+            this.playPauseString = '&#xf04b;'; 
+
         }
     }
     resizeWindow() {
@@ -62,13 +111,13 @@ export class YoutubeContainer implements AfterViewInit {
         //     return;
         // }
         console.log('resize');
-        let width = $(window).width();        
+        let width = $(window).width();
         let pHeight, pWidth;
         let height = $(window).height();
         let ratio: number = 16 / 9;
         if (width / ratio < height) {
             pWidth = Math.ceil(height * ratio);
-            console.log('pWidth:' +  pWidth)
+            console.log('pWidth:' + pWidth)
             this.playerEl.width(pWidth).height(height).css({
                 left: (width - pWidth) / 2,
                 top: 0
@@ -80,8 +129,16 @@ export class YoutubeContainer implements AfterViewInit {
                 top: (height - pHeight) / 2
             });
         }
-        this.element.nativeElement.style.setProperty('width', width + 'px');
         
+        // this.playerMenuEl.style.width = (width / 2) + 'px';
+        // this.playerMenuEl.style.height = (height / 2) + 'px';
+    
+        this.playerMenuEl.style.width = width + 'px';
+        this.playerMenuEl.style.height = height + 'px';
+
+
+        this.element.nativeElement.style.setProperty('width', width + 'px');
+
 
     }
 
@@ -93,7 +150,7 @@ export class YoutubeContainer implements AfterViewInit {
         let ratio: number = 16 / 9;
         this.player = new YT.Player('player', {
             width: width,
-            height: Math.ceil(width / ratio), 
+            height: Math.ceil(width / ratio),
             videoId: 'QDiJU9GZrnA',
             playerVars: {
                 controls: 0,
@@ -113,8 +170,34 @@ export class YoutubeContainer implements AfterViewInit {
             }
         });
         this.playerEl = $("#player");
+        this.playerMenuEl = $('#playListMenu .component')[0];
         $(window).on('resize', () => this.resizeWindow());
         this.resizeWindow();
+
+        this.playerMenuButton = $('#cn-button');
+        this.playerMenuButtonWrapper = $('#cn-wrapper');
+
+        this.playerMenuButton.on('click', (event:Event) => {
+            event.stopPropagation();
+            this.togglePlayMenu();
+        });
+        $('#playListMenu .component').on('click', (event:Event) => {
+            console.log('hello');
+            event.stopPropagation();
+            this.togglePlayMenu()}
+        );
+
+    }
+
+    togglePlayMenu() {
+        if (this.playerMenuButton.html() !== "Close") {            
+            this.playerMenuButton.html("Close");
+            this.playerMenuButtonWrapper.addClass('opened-nav');
+        }
+        else {
+            this.playerMenuButton.html("Menu");
+            this.playerMenuButtonWrapper.removeClass('opened-nav');
+        }
     }
 
 }
