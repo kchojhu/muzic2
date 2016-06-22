@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
@@ -38,6 +39,15 @@ public class PlayListServiceImpl implements PlayListService {
 	@Autowired
 	private CacheService cacheService;
 
+	private String newPlayListCacheKey = "START_DATE";
+	private String topFavPlayListCacheKey = "CNT_LIKE";
+	
+	@Scheduled(fixedRate = 3600000)
+	public void refreshSongs() {
+		cacheService.deleteCache(newPlayListCacheKey);
+		cacheService.deleteCache(topFavPlayListCacheKey);
+	}
+	
 	private Optional<String> getPlayListId(String playListId) {
 		Pattern pattern = Pattern.compile("(\\d+)");
 		Matcher matcher = pattern.matcher(playListId);
@@ -64,6 +74,12 @@ public class PlayListServiceImpl implements PlayListService {
 
 	@Override
 	public Optional<Set<PlayList>> getPlaylists(String type) {
+		Set<PlayList> cachePlayList = cacheService.getCache(type);
+		if (cachePlayList != null) {
+			return Optional.of(cachePlayList);
+		}
+		
+		
 		Set<PlayList> playListSet = new LinkedHashSet<>();
 		for (int i = 0; i < 100; i += 20) {
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(playListUrl
@@ -91,6 +107,7 @@ public class PlayListServiceImpl implements PlayListService {
 		}
 
 		if (playListSet != null && !playListSet.isEmpty()) {
+			cacheService.saveCache(playListSet, type);
 			return Optional.of(playListSet);
 		}
 

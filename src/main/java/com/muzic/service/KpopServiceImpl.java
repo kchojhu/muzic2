@@ -39,7 +39,7 @@ public class KpopServiceImpl implements MusicChartSerice {
 	
 	private String cacheSongKey = "kpop";
 
-	@Scheduled(fixedRate = 60000)
+	@Scheduled(fixedRate = 3600000)
 	public void refreshSongs() {
 		cacheService.deleteCache(cacheSongKey);
 	}

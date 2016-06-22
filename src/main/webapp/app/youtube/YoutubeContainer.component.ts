@@ -23,11 +23,11 @@ declare var classie;
                 <div class="cn-wrapper" id="cn-wrapper">
                     <ul>
                         <li><a href="#"><span>&#xf1f8;</span></a></li>
-                        <li><a href="#"><span>&#xf01e;</span></a></li>
-                        <li><a href="#"><span>&#xf04a;</span></a></li>
+                        <li (click)="playListEvent('repeat')"><a href="#" [style.color]="toggleRepeatColor"><span>&#xf01e;</span></a></li>
+                        <li (click)="playListEvent('prev')"><a href="#" ><span>&#xf04a;</span></a></li>
                         <li (click)="playPauseButton($event)"><a href="#" ><span [innerHTML]="playPauseString"></span></a></li>
-                        <li><a href="#"><span>&#xf04e;</span></a></li>
-                        <li><a href="#"><span>&#xf074;</span></a></li>
+                        <li (click)="playListEvent('next')"><a href="#"><span>&#xf04e;</span></a></li>
+                        <li (click)="playListEvent('random')"><a href="#"><span>&#xf074;</span></a></li>
                         <li><a href="#"><span>&#xf129;</span></a></li>
                     </ul>
                 </div>
@@ -38,7 +38,7 @@ declare var classie;
   `
 })
 export class YoutubeContainer implements AfterViewInit {
-    @Output() transitionEventEmitter: EventEmitter<ElementRef> = new EventEmitter<ElementRef>();
+    @Output() playListEventEmitter: EventEmitter<string> = new EventEmitter<string>();
 
     private playPauseString: string = '&#xf04b;';
     private player: any;
@@ -48,6 +48,14 @@ export class YoutubeContainer implements AfterViewInit {
     private playerMenuButtonWrapper: JQuery;
     private currentSong: Song;
     private currentMode: any;
+    private toggleRepeatColor:string = 'white';
+
+    playListEvent(command:string) {
+        if (command === 'repeat') {
+            this.toggleRepeatColor = this.toggleRepeatColor === 'white' ? '#429a67' : 'white';
+        }
+        this.playListEventEmitter.next(command);
+    }
 
     playPauseButton(event:Event) {
         if (this.currentMode === YT.PlayerState.PLAYING) {
@@ -89,16 +97,19 @@ export class YoutubeContainer implements AfterViewInit {
 
     }
 
+    onPlayerError(event) {
+        this.playListEvent('next');
+    }
 
     onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
             console.log('playing');
             this.currentMode = YT.PlayerState.PLAYING;
             this.playPauseString = '&#xf04c;';
-
+            this.playerEl[0].style.zIndex=1;
         }
         if (event.data === YT.PlayerState.ENDED) {
-            //       this.playNext();
+            this.playListEventEmitter.next('next');
         }
         if (event.data === YT.PlayerState.PAUSED) {
             this.currentMode = YT.PlayerState.PAUSED;
@@ -166,7 +177,8 @@ export class YoutubeContainer implements AfterViewInit {
                 wmode: "transparent"
             },
             events: {
-                'onStateChange': this.onPlayerStateChange.bind(this)
+                'onStateChange': this.onPlayerStateChange.bind(this),
+                'onError': this.onPlayerError.bind(this)
             }
         });
         this.playerEl = $("#player");

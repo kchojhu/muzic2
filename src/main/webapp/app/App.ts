@@ -18,7 +18,7 @@ import { } from '@angular/router';
     directives: [SongListContainer, YoutubeContainer, PlayListContainer],
     template: `
         <div id="songListsContainer" songListsContainer (musicRequestEmitter)="retrievePlayList($event)"></div>
-        <div id="youtubeContainer" youtubeContainer ></div>
+        <div id="youtubeContainer" youtubeContainer (playListEventEmitter)="playListEvent($event)"></div>
         <div id="playListContainer" playListContainer (youtubePlayerSongEvent)="youtubePlayerSongEvent($event)"></div>
   `
 })
@@ -30,6 +30,23 @@ export class App {
 
     retrievePlayList(musicRequest:MusicRequest) {
         this.playListContainer.retrievePlayList(musicRequest);
+    }
+    
+    playListEvent(command:string) {
+        switch(command) {
+            case 'next':   
+                this.playListContainer.playNextSong(1);
+                break;
+            case 'prev':
+                this.playListContainer.playNextSong(-1);
+                break;
+            case 'random':
+                this.playListContainer.setRandom();
+                break;            
+            case 'repeat':
+                this.playListContainer.toggleRepeat();
+                break;            
+        }
     }
     
     youtubePlayerSongEvent(song:Song) {

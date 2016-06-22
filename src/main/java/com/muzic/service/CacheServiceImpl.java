@@ -14,7 +14,7 @@ import com.google.api.client.util.Sets;
 @Service
 public class CacheServiceImpl implements CacheService{
 
-	private File cacheDiretory = new File(System.getProperty("user.home") + File.separator + "tmp2");
+	private File cacheDiretory = new File(System.getProperty("user.home") + File.separator + "tmp3");
 	
 	@Override
 	public Set<String> getKeys() {

@@ -59,7 +59,7 @@ public class MusicChartController {
 	private String[] countryList = { "Korean", "American", "Japanese", "Dance" };
 
 	private File artistIdFile = new File(
-			System.getProperty("user.home") + File.separator + "tmp2" + File.separator + "artistId.properties");
+			System.getProperty("user.home") + File.separator + "tmp3" + File.separator + "artistId.properties");
 
 	@RequestMapping("/playlist/{playlistType}")
 	public ResponseEntity<Set<PlayList>> getPlaylist(@PathVariable String playlistType) {
@@ -84,17 +84,11 @@ public class MusicChartController {
 
 	@RequestMapping("/musicDropdown")
 	public ResponseEntity<List<Map<String, String>>> musicDropDownValues() throws IOException {
+		System.out.println("hello");
 		Properties prop = new Properties();
 		prop.load(FileUtils.openInputStream(artistIdFile));
 
 		List<Map<String, String>> values = Lists.newArrayList();
-
-		for (String country : countryList) {
-			Map<String, String> musicValue = Maps.newHashMap();
-			musicValue.put("name", country);
-			musicValue.put("value", country);
-			values.add(musicValue);
-		}
 
 		prop.forEach((k, v) -> {
 			Map<String, String> musicValue = Maps.newHashMap();
@@ -106,6 +100,12 @@ public class MusicChartController {
 		return new ResponseEntity<List<Map<String, String>>>(values, HttpStatus.OK);
 	}
 
+	@RequestMapping("/genre/{genreId}")
+	public Songs getGenre(@PathVariable String genreId) {
+		return mellonArtistService.getSongs(genreId);
+	}
+	
+	
 	@RequestMapping("/top100")
 	public Songs top100(@RequestParam String country) {
 		if (NumberUtils.isNumber(country)) {

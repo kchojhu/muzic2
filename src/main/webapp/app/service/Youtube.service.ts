@@ -7,6 +7,7 @@ import { MusicItem } from "../model/MusicItem";
 //import 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import { MusicRequest } from '../model/MusicRequest';
+import { PlaylistItem } from '../model/Playlist';
 
 import { ApplicationUtil } from '../service/ApplicationUtil.service';
 
@@ -31,6 +32,33 @@ export class YoutubeService {
                 return <Song[]>response.json().songs;
             });
         }
+
+        if (musicRequest.type === 'genre') {
+            return this._http.get('/chart/genre/' + musicRequest.value).map((response: Response) => {
+                this.applicationUtil.hideLoad();
+                return <Song[]>response.json().songs;
+            });
+        }
+        
+        if (musicRequest.type === 'playList') {
+            return this._http.get('/chart/playlist-songs/' + musicRequest.value).map((response: Response) => {
+                this.applicationUtil.hideLoad();
+                return <Song[]>response.json().songs;
+            });
+        }
+
+    }
+    
+    getGenre() {
+        return this._http.get('/chart/musicDropdown').map((response: Response) => {
+            return <MusicItem[]> response.json();
+        });
+    }
+    
+    getPlayList(playlistType:string) {
+        return this._http.get('/chart/playlist/' + playlistType).map((response: Response) => {
+            return <PlaylistItem[]> response.json();
+        });
     }
 
     //    getDropdown() {
