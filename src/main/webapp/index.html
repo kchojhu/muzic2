@@ -1,85 +1,22 @@
 <!doctype html>
-<html>
-
+<html lang="en">
 <head>
-    <title>FN1</title>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="format-detection" content="telephone=no">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <link rel="stylesheet" type="text/css" href="css/app.css">
-    <link rel="stylesheet" type="text/css" href="css/loader.css">
-    <link rel="stylesheet" type="text/css" href="css/playMenu.css">
-    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:600,400|Open+Sans+Condensed:600,300,300italic&amp;subset=cyrillic,latin">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
-    <!--<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick-theme.css"/>-->
+    <meta charset="UTF-8">
+    <title>Angular 2 Seed Project</title>
+    <script src="vendor/es6-shim/es6-shim.min.js"></script>
+    <script src="vendor/zone.js/dist/zone.js"></script>
+    <script src="vendor/reflect-metadata/Reflect.js"></script>
+    <script src="vendor/systemjs/dist/system.src.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 </head>
-
 <body>
-    <div id="loaderScreen">
-        <div id="loader" class="loader">
-            <div class="side"></div>
-            <div class="side"></div>
-            <div class="side"></div>
-            <div class="side"></div>
-            <div class="side"></div>
-            <div class="side"></div>
-            <div class="side"></div>
-            <div class="side"></div>
-        </div>
-    </div>
-    <div id="app" app></div>
+<my-app>Loading...</my-app>
 
-    <script src="node_modules/zone.js/dist/zone.js"></script>
-    <script src="node_modules/reflect-metadata/Reflect.js"></script>
+<script>
+    System.import('systemjs.config.js').then(function() {
+        System.import('app/main');
+    }).catch(console.error.bind(console));
+</script>
 
-    <!--<script src="node_modules/es6-shim/es6-shim.js"></script>-->
-    <script src="node_modules/systemjs/dist/system.js"></script>
-    <script src="node_modules/rxjs/bundles/Rx.min.js"></script>
-
-    <script src="node_modules/lodash/lodash.min.js"></script>
-    <script src="node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="node_modules/gsap/src/minified/jquery.gsap.min.js"></script>
-    <script src="node_modules/gsap/src/minified/TweenMax.min.js"></script>
-    <script src="js/modernizr-custom-3.3.1.js"></script>
-    <script src="app/resources/systemjs.config.js"></script>
-    <!--<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>-->
-
-    <!-- 	<script src="node_modules/es6-shim/es6-shim.min.js"></script>
-	<script src="node_modules/systemjs/dist/system-polyfills.js"></script>
-	<script src="node_modules/angular2/es6/dev/src/testing/shims_for_IE.js"></script>
-	<script src="node_modules/angular2/bundles/angular2-polyfills.js"></script>
-	<script src="node_modules/systemjs/dist/system.js"></script>
-	<script src="node_modules/rxjs/bundles/Rx.min.js"></script>
-	<script src="node_modules/angular2/bundles/angular2.dev.js"></script>
-	<script src="node_modules/angular2/bundles/http.dev.js"></script> -->
-
-
-
-    <script>
-        $(function() {
-			var tag = document.createElement('script');
-			tag.src = "//www.youtube.com/iframe_api";
-			var firstScriptTag = document.getElementsByTagName('script')[0];
-			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-		});
-
-		onYouTubeIframeAPIReady = function() {			
-			System.config({
-				packages : {
-					app : {
-						format : 'register',
-						defaultExtension : 'js'
-					}
-				}
-			});
-            location.hash = 'init';
-			System.import('app/App').then(null, console.error.bind(console));
-		};
-    </script>
 </body>
-
 </html>

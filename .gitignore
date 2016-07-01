@@ -17,6 +17,7 @@ local.properties
 .project
 node_modules
 src/main/webapp/app2/
+src/main/webapp/dist/
 src/main/webapp/app/**/*.js
 src/main/webapp/app/**/*.js.map
 

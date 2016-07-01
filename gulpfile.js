@@ -1,57 +1,79 @@
-var args = require('yargs').argv;
-var browserSync = require('browser-sync');
-var del = require('del');
-var glob = require('glob');
 var gulp = require('gulp');
-var path = require('path');
-var _ = require('lodash');
-var $ = require('gulp-load-plugins')({lazy:true});
-var config = require('./gulp.config')();
+var gulpif = require('gulp-if');
+var args = require('yargs').argv;
 
-gulp.task('help', $.taskListing);
-gulp.task('default', ['help']);
+var typescript = require('gulp-typescript');
+var sourcemaps = require('gulp-sourcemaps');
 
-//gulp.task('watch-javascript'. function() {
-//	gulp.watch(config.jsFiles, )
-//});
+var del = require('del');
 
-//gulp.task('compile-ts', function () {
-//    var sourceTsFiles = [config.allTypeScript,                //path to typescript files
-//                         config.libraryTypeScriptDefinitions]; //reference to library .d.ts files
-//                        
-//
-//    var tsResult = gulp.src(sourceTsFiles)
-//                       .pipe(sourcemaps.init())
-//                       .pipe(tsc(tsProject));
-//
-//        tsResult.dts.pipe(gulp.dest(config.tsOutputPath));
-//        return tsResult.js
-//                        .pipe(sourcemaps.write('.'))
-//                        .pipe(gulp.dest(config.tsOutputPath));
-//});
-//			files:['src/main/resources/webapp/index.html', 'target/classes/**/*.class', 'src/main/resources/webapp/app/**/*.js', 'src/main/resources/public/**/*.css'],
-gulp.task('serve', function() {
-	var options = {
-			proxy: 'localhost:8080',
-			port: 4000,
-			reloadDelay:1000,
-			files:['src/main/webapp/css/*.css'],
-//			browser: 'firefox',
-			logLevel: 'debug',
-			injectChange: true,
-			logFileChange: true,
-			logPrefix: 'gulp-patterns',
-			notify:true
-	};
-//	browsers: 'google chrome',
-//	browser: 'firefox',
-	//			files:['src/main/webapp/index.html', 'target/classes/**/*.class', 'target/classes/**/*.js', 'target/classes/**/*.css'],
+var src = 'src/main/webapp/';
+var dist = 'src/main/webapp/dist/';
 
-	browserSync(options);
-	
-	//gulp.watch([].concat.apply(config.indexFile), browserSync.reload);
-	gulp.watch(['src/main/webapp/index.html', 'src/main/webapp/app/**/*.js', 'target/classes/**/*.class'], function() {
-		browserSync.reload({stream:false});
-	});
+var tsconfig = typescript.createProject('tsconfig.json');
+
+gulp.task('build-ts', function () {
+    return gulp.src(src + 'app/**/*.ts')
+        .pipe(gulpif(!args.production, sourcemaps.init()))
+        .pipe(typescript(tsconfig))
+        .pipe(gulpif(!args.production, sourcemaps.write()))
+        .pipe(gulp.dest(dist + 'app'));
 });
 
+gulp.task('build-copy', function () {
+    gulp.src([src + 'app/**/*.html', src + 'app/**/*.htm', src + 'app/**/*.css'])
+        .pipe(gulp.dest(dist + 'app'));
+
+    gulp.src([src + 'index.html'])
+        .pipe(gulp.dest(dist));
+
+    return gulp.src([src + 'systemjs.config.js'])
+        .pipe(gulp.dest(dist));
+});
+
+gulp.task('clean', function() {
+   del([dist + '/**/*.html', dist + '/**/*.htm', dist + '/**/*.css'], dist + 'app');
+});
+
+gulp.task('vendor', function() {
+    del([dist + '/vendor/**/*']);
+
+    gulp.src(['node_modules/@angular/**'])
+        .pipe(gulp.dest(dist + 'vendor/@angular'));
+
+    //ES6 Shim
+    gulp.src('node_modules/es6-shim/**')
+        .pipe(gulp.dest(dist + '/vendor/es6-shim/'));
+
+    //reflect metadata
+    gulp.src('node_modules/reflect-metadata/**')
+        .pipe(gulp.dest(dist + '/vendor/reflect-metadata/'));
+
+    //rxjs
+    gulp.src('node_modules/rxjs/**')
+        .pipe(gulp.dest(dist + '/vendor/rxjs/'));
+
+    //systemjs
+    gulp.src('node_modules/systemjs/**')
+        .pipe(gulp.dest(dist + '/vendor/systemjs/'));
+    
+    // ng2-bootstrap
+    gulp.src('node_modules/ng2-bootstrap/**')
+        .pipe(gulp.dest(dist + '/vendor/ng2-bootstrap/'));
+
+    // moment
+    gulp.src('node_modules/moment/**')
+        .pipe(gulp.dest(dist + '/vendor/moment/'));
+
+    //zonejs
+    return gulp.src('node_modules/zone.js/**')
+        .pipe(gulp.dest(dist + '/vendor/zone.js/'));
+});
+
+gulp.task('watch', function() {
+   gulp.watch(src + '**/*.ts', ['build-ts']);
+   gulp.watch(src + '**/*.{html,htm,css}', ['build-copy']);
+});
+
+gulp.task('build', ['build-ts', 'build-copy']);
+gulp.task('default', ['build', 'watch']);
