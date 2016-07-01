@@ -24,11 +24,11 @@ import { PlaylistItem } from '../model/Playlist';
             </fieldset>
             <fieldset>
                 <legend><b>New PlayList</b></legend>
-                <p *ngFor="let playlistItem of newPlayListMusicItems" (click)="retrievePlayList({type:'playList', value:playlistItem.id, name:playlistItem.numberOfSongs})">{{playlistItem.numberOfSongs}} {{playlistItem.name}}</p>
+                <p *ngFor="let playlistItem of newPlayListMusicItems" (click)="retrievePlayList({type:'playList', value:playlistItem.id, name:playlistItem.name})">{{playlistItem.numberOfSongs}} {{playlistItem.name}}</p>
             </fieldset>
             <fieldset>
                 <legend><b>Fav PlayList</b></legend>
-                <p *ngFor="let playlistItem of topFavoritePlayListMusicItems" (click)="retrievePlayList({type:'playList', value:playlistItem.id, name:playlistItem.numberOfSongs})">{{playlistItem.numberOfSongs}} {{playlistItem.name}}</p>
+                <p *ngFor="let playlistItem of topFavoritePlayListMusicItems" (click)="retrievePlayList({type:'playList', value:playlistItem.id, name:playlistItem.name})">{{playlistItem.numberOfSongs}} {{playlistItem.name}}</p>
             </fieldset>
             `
 })

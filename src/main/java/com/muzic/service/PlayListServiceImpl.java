@@ -128,12 +128,18 @@ public class PlayListServiceImpl implements PlayListService {
 			if (resultsMap != null && !resultsMap.isEmpty()) {
 				List<Song> songList = resultsMap.stream().map(resultMap -> {
 					Song song = new Song();
-					song.setArtistName(resultMap.get("artist/_text").toString());
-					song.setRank(Integer.valueOf(resultMap.get("rank").toString()));
-					song.setSongName(resultMap.get("title/_text").toString());
+					try {
+						song.setArtistName(resultMap.get("artist/_text").toString());
+						song.setRank(Integer.valueOf(resultMap.get("rank").toString()));
+						song.setSongName(resultMap.get("title/_text").toString());
 
-					return song;
-				}).collect(Collectors.toList());
+						return song;						
+					} catch (Exception e) {
+						System.out.println(song);
+						e.printStackTrace();
+						return null;
+					}
+				}).filter(p -> p != null).collect(Collectors.toList());
 
 				if (songList != null && !songList.isEmpty()) {
 					

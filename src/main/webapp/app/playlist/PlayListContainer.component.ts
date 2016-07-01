@@ -58,7 +58,7 @@ export class PlayListContainer implements AfterViewInit {
 
 
         if (!this.repeatSong) {
-            if (!this.repeatSong && nextSongIndex === undefined && nextSongIndex < this.songs.length - 1) {
+            if (nextSongIndex !== undefined && nextSongIndex < this.songs.length - 1) {
                 nextSongIndex += increment;
             } else {
                 nextSongIndex = 0;
