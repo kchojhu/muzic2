@@ -2,21 +2,15 @@ package com.muzic.model;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 
 public class Songs extends JsonResponse implements Serializable {
 	private List<Song> songs = Lists.newArrayList();
 
-	private String dummyText = "phuongtm";
-
-	public String getDummyText() {
-		return dummyText;
-	}
-
-	public void setDummyText(String dummyText) {
-		this.dummyText = dummyText;
-	}
 
 	public List<Song> getSongs() {
 		return songs;
@@ -26,6 +20,10 @@ public class Songs extends JsonResponse implements Serializable {
 		this.songs = songs;
 	}
 
+	public List<Map<String, String>> toSongMaps() {
+		return songs.stream().map(song -> song.toMap()).collect(Collectors.toList());
+	}
+	
 	@Override
 	public String toString() {
 		StringBuffer stringBuffer = new StringBuffer();

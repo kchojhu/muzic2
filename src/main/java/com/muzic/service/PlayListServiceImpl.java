@@ -1,5 +1,6 @@
 package com.muzic.service;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,10 +21,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.muzic.model.PlayList;
 import com.muzic.model.Song;
 import com.muzic.model.Songs;
+import com.muzic.util.ApplicationUtil;
 
 @Service("playServiceService")
 public class PlayListServiceImpl implements PlayListService {
 
+	private String playlistKey = "playlist/korean/playlist-";
+	
 	@Value("${korean.playlist.url}")
 	private String playListUrl;
 
@@ -39,6 +43,9 @@ public class PlayListServiceImpl implements PlayListService {
 	@Autowired
 	private CacheService cacheService;
 
+	@Autowired
+	private FirebaseService firebaseService;
+	
 	private String newPlayListCacheKey = "START_DATE";
 	private String topFavPlayListCacheKey = "CNT_LIKE";
 	
@@ -116,6 +123,17 @@ public class PlayListServiceImpl implements PlayListService {
 
 	@Override
 	public Optional<Songs> getPlaylistsSongs(String playListId) {
+		LocalDate now = LocalDate.now();
+
+		Songs songs = new Songs();
+
+		Optional<List<Song>> results = firebaseService.readList(playlistKey + ApplicationUtil.getDateFormatKey(now), Song.class);
+		
+		if (results.isPresent()) {
+			songs.getSongs().addAll(results.get());
+			return Optional.of(songs);
+		}
+		
 		UriComponentsBuilder builder = UriComponentsBuilder
 				.fromHttpUrl(playListIdUrl.replaceFirst("playlistIdValue", playListId));
 		UriComponents components = builder.build(true);
@@ -123,8 +141,7 @@ public class PlayListServiceImpl implements PlayListService {
 		Map<String, Object> result = restTemplate.getForObject(components.toUri(), Map.class);
 
 		if (result != null && result.containsKey("results")) {
-			List<Map<String, Object>> resultsMap = (List<Map<String, Object>>) result.get("results");
-			Songs songs = new Songs();
+			List<Map<String, Object>> resultsMap = (List<Map<String, Object>>) result.get("results");			
 			if (resultsMap != null && !resultsMap.isEmpty()) {
 				List<Song> songList = resultsMap.stream().map(resultMap -> {
 					Song song = new Song();
@@ -147,6 +164,7 @@ public class PlayListServiceImpl implements PlayListService {
 						youtubeService.getSong(song);
 					});
 					songs.setSongs(songList.stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
+					firebaseService.writeList(playlistKey + ApplicationUtil.getDateFormatKey(now), songs.getSongs());
 					return Optional.of(songs);
 				}
 

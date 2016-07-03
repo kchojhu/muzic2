@@ -1,22 +1,32 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Angular 2 Seed Project</title>
+    <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes" />
+    <title>FN1 Muzic</title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:600,400|Open+Sans+Condensed:600,300,300italic&amp;subset=cyrillic,latin">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
     <script src="vendor/es6-shim/es6-shim.min.js"></script>
     <script src="vendor/zone.js/dist/zone.js"></script>
     <script src="vendor/reflect-metadata/Reflect.js"></script>
     <script src="vendor/systemjs/dist/system.src.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.mmenu/5.6.5/js/jquery.mmenu.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jQuery.mmenu/5.6.5/css/jquery.mmenu.css">
+    <link rel="stylesheet" href="app/style.css">
 </head>
-<body>
-<my-app>Loading...</my-app>
 
-<script>
-    System.import('systemjs.config.js').then(function() {
+<body>
+
+    <div mz-app></div>
+
+    <script>
+        System.import('systemjs.config.js').then(function() {
         System.import('app/main');
     }).catch(console.error.bind(console));
-</script>
+    </script>
 
 </body>
+
 </html>

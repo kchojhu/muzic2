@@ -1,6 +1,9 @@
 package com.muzic.model;
 
 import java.io.Serializable;
+import java.util.Map;
+
+import com.google.common.collect.Maps;
 
 public class Song implements Serializable{
 	private String songId;
@@ -9,8 +12,31 @@ public class Song implements Serializable{
 	private Integer rank;
 	private Integer duration;
 	private String image;
-
 	
+	public Song() {
+		super();
+	}
+	
+	public Song(Map<String, String> songMap) {
+		this();
+		this.songId = songMap.get("songId");
+		this.artistName = songMap.get("artistName");
+		this.songName = songMap.get("songName");
+		this.rank = Integer.valueOf(songMap.get("rank"));
+		this.duration = Integer.valueOf(songMap.get("duration"));
+		this.image = songMap.get("image");
+	}
+	
+	public Map<String, String> toMap() {
+		Map<String, String> songMap = Maps.newHashMap();
+		songMap.put("songId", this.songId);
+		songMap.put("artistName", this.artistName);
+		songMap.put("songName", this.songName);
+		songMap.put("rank", this.rank.toString());
+		songMap.put("duration", this.duration.toString());
+		songMap.put("image", this.image);
+		return songMap;
+	}
 	
 	public String getImage() {
 		return image;

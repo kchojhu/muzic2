@@ -1,5 +1,6 @@
 var gulp = require('gulp');
 var gulpif = require('gulp-if');
+var browserSync = require('browser-sync');
 var args = require('yargs').argv;
 
 var typescript = require('gulp-typescript');
@@ -18,6 +19,34 @@ gulp.task('build-ts', function () {
         .pipe(typescript(tsconfig))
         .pipe(gulpif(!args.production, sourcemaps.write()))
         .pipe(gulp.dest(dist + 'app'));
+});
+
+gulp.task('browserSync', function() {
+	var options = {
+			proxy: 'localhost:8080',
+			port: 4000,
+			reloadDelay:1000,
+			files:['src/main/webapp/dist/app/*.css'],
+//			browser: 'firefox',
+			logLevel: 'debug',
+			injectChange: true,
+			logFileChange: true,
+			logPrefix: 'gulp-patterns',
+			notify:true
+	};
+//	browsers: 'google chrome',
+
+	browserSync(options);
+	
+	//gulp.watch([].concat.apply(config.indexFile), browserSync.reload);
+//	gulp.watch(['src/main/webapp/index.html', 'src/main/webapp/app/**/*.js', 'target/classes/**/*.class'], function() {
+//		browserSync.reload({stream:false});
+//	});
+
+	gulp.watch(['src/main/webapp/dist/index.html', 'src/main/webapp/dist/app/**/*.js'], function() {
+		browserSync.reload({stream:false});
+	});
+
 });
 
 gulp.task('build-copy', function () {
@@ -72,8 +101,9 @@ gulp.task('vendor', function() {
 
 gulp.task('watch', function() {
    gulp.watch(src + '**/*.ts', ['build-ts']);
-   gulp.watch(src + '**/*.{html,htm,css}', ['build-copy']);
+   gulp.watch([src + '**/*.{html,htm,css}', '!' + dist],  ['build-copy']);
 });
 
 gulp.task('build', ['build-ts', 'build-copy']);
 gulp.task('default', ['build', 'watch']);
+gulp.task('serve', ['clean', 'vendor', 'build', 'watch', 'browserSync']);

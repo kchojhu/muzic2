@@ -8,7 +8,14 @@ public class HomeController {
 
 	@RequestMapping("/")
 	public String index() {
-		return "forward:/index.html";
+		System.out.println("test");
+		return "redirect:/dist/index.html";
 	}
+
+	@RequestMapping("/index.html")
+	public String index2() {
+		System.out.println("test");
+		return "redirect:/dist/index.html";
+	}	
 	
 }

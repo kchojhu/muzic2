@@ -24,8 +24,13 @@ var packageNames = [
     '@angular/upgrade'
 ];
 
+//packageNames.forEach(function(pkgName) {
+//    packages[pkgName] = { main: 'index.js', defaultExtension: 'js' };
+//});
+
 packageNames.forEach(function(pkgName) {
-    packages[pkgName] = { main: 'index.js', defaultExtension: 'js' };
+    var name = pkgName.indexOf("/")>0 ? pkgName.split("/")[1] : pkgName;
+    packages[pkgName] = { main: "bundles/" +name + '.umd.js', defaultExtension: 'js' };
 });
 
 var config = {

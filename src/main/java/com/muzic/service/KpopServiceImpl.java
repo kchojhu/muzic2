@@ -1,7 +1,9 @@
 package com.muzic.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -21,10 +23,13 @@ import com.google.api.client.util.Lists;
 import com.google.api.client.util.Sets;
 import com.muzic.model.Song;
 import com.muzic.model.Songs;
+import com.muzic.util.ApplicationUtil;
 
 @Service("kPopService")
 public class KpopServiceImpl implements MusicChartSerice {
 
+	private String playlistKey = "playlist/korean/top-";
+	
 	@Value("${kpop.urls}")
 	private String[] kpopUrls;
 
@@ -35,29 +40,23 @@ public class KpopServiceImpl implements MusicChartSerice {
 	private YoutubeService youtubeService;
 
 	@Autowired
-	private CacheService cacheService;
+	private FirebaseService firebaseService;
 	
-	private String cacheSongKey = "kpop";
-
-	@Scheduled(fixedRate = 3600000)
-	public void refreshSongs() {
-		cacheService.deleteCache(cacheSongKey);
-	}
 	
-	@PostConstruct
-	public void init() {
-		this.getSongs();
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Songs getSongs() {
+		LocalDate now = LocalDate.now();
 
-		Songs cache = cacheService.getCache(cacheSongKey);
-		if (cache != null) {
-			return cache;
+		Songs songs = new Songs();
+
+		Optional<List<Song>> results = firebaseService.readList(playlistKey + ApplicationUtil.getDateFormatKey(now), Song.class);
+		
+		if (results.isPresent()) {
+			songs.getSongs().addAll(results.get());
+			return songs;
 		}
-
+		
 		List<Map<String, Object>> songsList = Lists.newArrayList();
 
 		for (String kpopUrl : kpopUrls) {
@@ -71,8 +70,6 @@ public class KpopServiceImpl implements MusicChartSerice {
 		}
 		
 		Set<String> songTitle = Sets.newHashSet();
-
-		Songs songs = new Songs();
 
 		songsList.forEach(s -> {
 			Integer rank = null;
@@ -102,8 +99,7 @@ public class KpopServiceImpl implements MusicChartSerice {
 
 		
 		songs.setSongs(songs.getSongs().stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
-
-		cacheService.saveCache(songs, cacheSongKey);
+		firebaseService.writeList(playlistKey + ApplicationUtil.getDateFormatKey(now), songs.getSongs());
 		
 		return songs;
 	}

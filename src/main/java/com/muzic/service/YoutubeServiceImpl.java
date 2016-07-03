@@ -35,6 +35,11 @@ public class YoutubeServiceImpl implements YoutubeService {
 	
 	@Autowired
 	private YouTube youtube;
+	
+	public Song changeSong(String playlistId, Song song) {
+		
+		return null;
+	}
 
 	private static void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
 

@@ -1,23 +1,17 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit } from '@angular/core';
+import { OtherComponent } from "./other/other.component";
 import { HTTP_PROVIDERS} from '@angular/http';
-import { PlaylistService, LoadMaskService} from './service/Services';
-import { MusicPlayerComponent} from './component/Components';
+import {PlaylistService} from './service/Services';
 
 @Component({
     moduleId: module.id,
-    selector: '[mz-app]',
+    selector: '[my-app]',
     templateUrl: 'app.component.html',
-    directives: [MusicPlayerComponent],
-    providers: [HTTP_PROVIDERS, PlaylistService, LoadMaskService]
+    directives: [OtherComponent],
+    providers: [HTTP_PROVIDERS, PlaylistService]
 })
 export class AppComponent implements AfterViewInit {
-
-    constructor(private _loadMaskService: LoadMaskService) {
-
-    }
-
     ngAfterViewInit() {
-        this._loadMaskService.hideMask();
         $('nav#menu').mmenu({
             extensions: ['effect-slide-menu', 'pageshadow'],
             searchfield: true,
