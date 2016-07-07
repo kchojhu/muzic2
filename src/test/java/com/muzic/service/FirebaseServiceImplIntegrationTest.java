@@ -42,6 +42,26 @@ public class FirebaseServiceImplIntegrationTest extends Muzic2ApplicationTests {
 		countDownLatch.await(10, TimeUnit.SECONDS);
 	}
 	
+	@Test
+	public void writeList2() throws Exception {
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		List<Song> maps = Lists.newArrayList();
+		for (int i = 0; i < 10; i++) {			
+			Song song1 = new Song();
+			song1.setArtistName("zzzlah" + i);
+			song1.setDuration(100);
+			song1.setImage("blahimage" + i);
+			song1.setRank(i);
+			song1.setSongId("difaidja" + i);
+			song1.setSongName("ok.... + " + i);
+			maps.add(song1);
+		}
+
+		firebaseService.writeList("playlist/kr/top", maps);
+		countDownLatch.await(10, TimeUnit.SECONDS);
+
+	}
+	
 
 	@Test
 	public void writeList() throws Exception {

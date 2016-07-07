@@ -1,6 +1,4 @@
 import { Injectable, EventEmitter} from '@angular/core';
-import { Http, Response} from '@angular/http';
-import { Song, MusicItem, MusicRequest, PlaylistItem  } from "../model/Models";
 
 @Injectable()
 export class LoadMaskService {

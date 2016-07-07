@@ -1,7 +1,9 @@
 package com.muzic.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -17,11 +19,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.muzic.model.Song;
 import com.muzic.model.Songs;
+import com.muzic.util.ApplicationUtil;
 import com.google.api.client.util.Lists;
 
 @Service("ituneService")
 public class ItuneServiceImpl implements MusicChartSerice {
-
+	private String playlistKey = "playlist/";
 	@Value("${itune.url}")
 	private String songUrl;
 
@@ -32,23 +35,25 @@ public class ItuneServiceImpl implements MusicChartSerice {
 	private YoutubeService youtubeService;
 
 	@Autowired
-	private CacheService cacheService;
+	private FirebaseService firebaseService;
 
+	
 	@Scheduled(fixedRate = 86400)
 	public void refreshSongs(String country) {
-		cacheService.deleteCache(country);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Songs getSongs(String country) {
-
-		Songs cache = cacheService.getCache(country);
-		if (cache != null) {
-			return cache;
+		LocalDate now = LocalDate.now();
+		Songs songs = new Songs();
+		Optional<List<Song>> results = firebaseService.readList(playlistKey + country + "/top", Song.class);
+		if (results.isPresent()) {
+			songs.getSongs().addAll(results.get());
+			return songs;
 		}
 
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(songUrl.replaceFirst("country", country));
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(songUrl.replaceFirst("country", country == "us" ? "" : country));
 		UriComponents components = builder.build(true);
 		List<Map<String, Object>> songsList = Lists.newArrayList();
 		Map<String, Object> result = restTemplate.getForObject(components.toUri(), Map.class);
@@ -56,7 +61,6 @@ public class ItuneServiceImpl implements MusicChartSerice {
 			songsList.addAll((List<Map<String, Object>>) result.get("results"));
 		}
 
-		Songs songs = new Songs();
 
 		songsList.forEach(s -> {
 			Integer rank = null;
@@ -86,8 +90,8 @@ public class ItuneServiceImpl implements MusicChartSerice {
 		});
 
 		songs.setSongs(songs.getSongs().stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
-
-		cacheService.saveCache(songs, country);
+		firebaseService.writeList(playlistKey + country + "/top-" +  ApplicationUtil.getDateFormatKey(now), songs.getSongs());
+		firebaseService.writeList(playlistKey + country + "/top", songs.getSongs());
 
 		return songs;
 	}

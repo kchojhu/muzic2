@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.muzic.model.PlayList;
 import com.muzic.model.Song;
 import com.muzic.model.Songs;
@@ -26,7 +28,7 @@ import com.muzic.util.ApplicationUtil;
 @Service("playServiceService")
 public class PlayListServiceImpl implements PlayListService {
 
-	private String playlistKey = "playlist/korean/playlist-";
+	private String playlistKey = "playlist/kr/playlist";
 	
 	@Value("${korean.playlist.url}")
 	private String playListUrl;
@@ -41,18 +43,12 @@ public class PlayListServiceImpl implements PlayListService {
 	private YoutubeService youtubeService;
 	
 	@Autowired
-	private CacheService cacheService;
-
-	@Autowired
 	private FirebaseService firebaseService;
-	
 	private String newPlayListCacheKey = "START_DATE";
 	private String topFavPlayListCacheKey = "CNT_LIKE";
 	
 	@Scheduled(fixedRate = 3600000)
 	public void refreshSongs() {
-		cacheService.deleteCache(newPlayListCacheKey);
-		cacheService.deleteCache(topFavPlayListCacheKey);
 	}
 	
 	private Optional<String> getPlayListId(String playListId) {
@@ -81,11 +77,13 @@ public class PlayListServiceImpl implements PlayListService {
 
 	@Override
 	public Optional<Set<PlayList>> getPlaylists(String type) {
-		Set<PlayList> cachePlayList = cacheService.getCache(type);
-		if (cachePlayList != null) {
-			return Optional.of(cachePlayList);
-		}
+		Optional<List<PlayList>> results = firebaseService.readList(playlistKey, PlayList.class);
 		
+		if (results.isPresent() && false) {
+			Set<PlayList> playListSet = Sets.newHashSet(results.get().iterator());
+			return Optional.of(playListSet);
+		}
+
 		
 		Set<PlayList> playListSet = new LinkedHashSet<>();
 		for (int i = 0; i < 100; i += 20) {
@@ -114,7 +112,12 @@ public class PlayListServiceImpl implements PlayListService {
 		}
 
 		if (playListSet != null && !playListSet.isEmpty()) {
-			cacheService.saveCache(playListSet, type);
+			firebaseService.writeList(playlistKey, Lists.newArrayList(playListSet));
+			
+			playListSet.forEach(playList -> {
+				getPlaylistsSongs(playList.getId());
+			});
+			
 			return Optional.of(playListSet);
 		}
 
@@ -127,7 +130,7 @@ public class PlayListServiceImpl implements PlayListService {
 
 		Songs songs = new Songs();
 
-		Optional<List<Song>> results = firebaseService.readList(playlistKey + ApplicationUtil.getDateFormatKey(now), Song.class);
+		Optional<List<Song>> results = firebaseService.readList(playlistKey + "-playListId", Song.class);
 		
 		if (results.isPresent()) {
 			songs.getSongs().addAll(results.get());
@@ -164,7 +167,7 @@ public class PlayListServiceImpl implements PlayListService {
 						youtubeService.getSong(song);
 					});
 					songs.setSongs(songList.stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
-					firebaseService.writeList(playlistKey + ApplicationUtil.getDateFormatKey(now), songs.getSongs());
+					firebaseService.writeList(playlistKey + "-" + playListId, songs.getSongs(), false);
 					return Optional.of(songs);
 				}
 

@@ -28,7 +28,7 @@ import com.muzic.util.ApplicationUtil;
 @Service("kPopService")
 public class KpopServiceImpl implements MusicChartSerice {
 
-	private String playlistKey = "playlist/korean/top-";
+	private String playlistKey = "playlist/kr/top";
 	
 	@Value("${kpop.urls}")
 	private String[] kpopUrls;
@@ -50,7 +50,7 @@ public class KpopServiceImpl implements MusicChartSerice {
 
 		Songs songs = new Songs();
 
-		Optional<List<Song>> results = firebaseService.readList(playlistKey + ApplicationUtil.getDateFormatKey(now), Song.class);
+		Optional<List<Song>> results = firebaseService.readList(playlistKey, Song.class);
 		
 		if (results.isPresent()) {
 			songs.getSongs().addAll(results.get());
@@ -99,7 +99,8 @@ public class KpopServiceImpl implements MusicChartSerice {
 
 		
 		songs.setSongs(songs.getSongs().stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
-		firebaseService.writeList(playlistKey + ApplicationUtil.getDateFormatKey(now), songs.getSongs());
+		firebaseService.writeList(playlistKey, songs.getSongs());
+		firebaseService.writeList(playlistKey + "-" + ApplicationUtil.getDateFormatKey(now), songs.getSongs());
 		
 		return songs;
 	}

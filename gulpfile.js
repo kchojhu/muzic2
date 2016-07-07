@@ -60,6 +60,11 @@ gulp.task('build-copy', function () {
         .pipe(gulp.dest(dist));
 });
 
+gulp.task('build-copy-css', function () {
+    return gulp.src([src + 'app/**/*.css'])
+        .pipe(gulp.dest(dist + 'app'));
+});
+
 gulp.task('clean', function() {
    del([dist + '/**/*.html', dist + '/**/*.htm', dist + '/**/*.css'], dist + 'app');
 });
@@ -87,12 +92,8 @@ gulp.task('vendor', function() {
         .pipe(gulp.dest(dist + '/vendor/systemjs/'));
     
     // ng2-bootstrap
-    gulp.src('node_modules/ng2-bootstrap/**')
-        .pipe(gulp.dest(dist + '/vendor/ng2-bootstrap/'));
-
-    // moment
-    gulp.src('node_modules/moment/**')
-        .pipe(gulp.dest(dist + '/vendor/moment/'));
+    gulp.src('node_modules/lockr/**')
+        .pipe(gulp.dest(dist + '/vendor/lockr/lockr.min.js'));
 
     //zonejs
     return gulp.src('node_modules/zone.js/**')
@@ -101,7 +102,8 @@ gulp.task('vendor', function() {
 
 gulp.task('watch', function() {
    gulp.watch(src + '**/*.ts', ['build-ts']);
-   gulp.watch([src + '**/*.{html,htm,css}', '!' + dist],  ['build-copy']);
+   gulp.watch([src + '**/*.{html,htm}', '!' + dist],  ['build-copy']);
+   gulp.watch([src + '**/*.css', '!' + dist],  ['build-copy-css']);
 });
 
 gulp.task('build', ['build-ts', 'build-copy']);

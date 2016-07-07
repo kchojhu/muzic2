@@ -30,6 +30,7 @@
     "es6-shim": "^0.35.0",
     "jquery": "^2.2.2",
     "jquery.mmenu": "^5.6.5",
+    "lockr": "^0.8.4",
     "lodash": "^4.6.1",
     "ng2-bootstrap": "^1.0.17",
     "reflect-metadata": "^0.1.3",

@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.muzic.model.Song;
 
 @Service
 public class FirebaseServiceImpl implements FirebaseService {
@@ -45,10 +46,21 @@ public class FirebaseServiceImpl implements FirebaseService {
 		databaseReference.updateChildren(updateMap);		
 	}
 	
+	private boolean dataRefExists(String dataPoint) {
+		Optional<List<Object>> results = readList(dataPoint, Object.class);
+		return results.isPresent();		
+	}
+	
 	@Override
-	public void writeList(String dataPoint, List objects) {
+	public void writeList(String dataPoint, List objects, boolean override) {
+		
 		try {
+			if (!override && dataRefExists(dataPoint)) {
+				return;
+			}
+
 			DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(dataPoint);
+			
 			databaseReference.removeValue(new DatabaseReference.CompletionListener() {
 
 				@Override
@@ -57,11 +69,17 @@ public class FirebaseServiceImpl implements FirebaseService {
 				}
 				
 			});
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 		
+	
+	}
+	@Override
+	public void writeList(String dataPoint, List objects) {
+		writeList(dataPoint, objects, true);
 		
 	}
 	

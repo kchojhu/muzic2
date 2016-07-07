@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/3e1a4a1af0564a993639a72d61835edbd4d0eabc/lockr/lockr.d.ts",
+    "raw": "registry:dt/lockr#0.8.3+20151206132246",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/3e1a4a1af0564a993639a72d61835edbd4d0eabc/lockr/lockr.d.ts"
+  }
+}

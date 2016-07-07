@@ -1,48 +1,30 @@
-import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { Component, AfterViewInit, OnInit, ViewChild } from '@angular/core';
 import { HTTP_PROVIDERS} from '@angular/http';
-import { PlaylistService, LoadMaskService} from './service/Services';
-import { MusicPlayerComponent} from './component/Components';
+import { PlaylistService, LoadMaskService, MenuService, StorageService, ApplicationService} from './service/Services';
+import { MusicPlayerComponent, MenuComponent} from './component/Components';
 
 @Component({
     moduleId: module.id,
     selector: '[mz-app]',
     templateUrl: 'app.component.html',
-    directives: [MusicPlayerComponent],
-    providers: [HTTP_PROVIDERS, PlaylistService, LoadMaskService]
+    directives: [MusicPlayerComponent, MenuComponent],
+    providers: [HTTP_PROVIDERS, PlaylistService, LoadMaskService, MenuService, StorageService, ApplicationService]
 })
 export class AppComponent implements AfterViewInit {
 
-    constructor(private _loadMaskService: LoadMaskService) {
+    @ViewChild(MusicPlayerComponent) private  _musicPlayerComponent: MusicPlayerComponent;
+
+    constructor(private _loadMaskService: LoadMaskService, private _storageService: StorageService) {
 
     }
 
     ngAfterViewInit() {
         this._loadMaskService.hideMask();
-        $('nav#menu').mmenu({
-            extensions: ['effect-slide-menu', 'pageshadow'],
-            searchfield: true,
-            counters: true,
-            navbar: {
-                title: 'Advanced menu'
-            },
-            navbars: [
-                {
-                    position: 'top',
-                    content: ['searchfield']
-                }, {
-                    position: 'top',
-                    content: [
-                        'prev',
-                        'title',
-                        'close'
-                    ]
-                }, {
-                    position: 'bottom',
-                    content: [
-                        '<a href="http://mmenu.frebsite.nl/wordpress-plugin.html" target="_blank">WordPress plugin</a>'
-                    ]
-                }
-            ]
-        });
+
+        // let hash = location.hash.slice(1);
+        // if (hash && hash.length > 0) {
+        //     this._musicPlayerComponent.hashchange();
+        // }
+
     }
 }

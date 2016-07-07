@@ -2,6 +2,8 @@ package com.muzic.service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,12 +20,10 @@ public class PlayListServiceImplIntegrationTest extends Muzic2ApplicationTests{
 	private PlayListService playListService;
 
 	@Test
-	public void getPlayList() {
-		Optional<Set<PlayList>> playList = playListService.getPlaylists("LIKE_CNT");
-		
-		Assert.assertTrue(playList.isPresent());
-		System.out.println("result size:" + playList.get().size());
-		System.out.println(playList);		
+	public void getPlayList() throws Exception{
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		Optional<Set<PlayList>> playList = playListService.getPlaylists("START_DATE");
+		countDownLatch.await(30, TimeUnit.SECONDS);
 	}
 	
 	@Test
