@@ -12,7 +12,14 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
     private player: any;
     private playerEl: JQuery;
     private _isNewUser: boolean = false;
+    private playerMenuButton: JQuery;
+    private playPauseString: string = '&#xf04b;';
+    private playerMenuButtonWrapper: JQuery;
+    private currentMode: any;
+    private _isPlayeReady: boolean = false;
     private countries: Array<Country> = new Array<Country>();
+    private progressBar: JQuery;
+    private progressBarInterval: any;
 
     constructor(private _storageService: StorageService, private _menuService: MenuService, private _applicationService: ApplicationService) {
 
@@ -20,12 +27,24 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
     selectCountryMusic(country: Country) {
         this._storageService.addCountry(country.countryCode);
-        this._applicationService.applicationEventEmitter.emit({ type: 'playlist', data: { country: country.countryCode, playlist: 'top' } });
+        this._applicationService.applicationEventEmitter.emit({ type: 'playlist', data: { country: country.countryCode, playlist: 'top', songIndex: 0 } });
     }
 
+    playerEventProcessor(appEvent) {
+        if (!this._isPlayeReady) {
+            this._isPlayeReady = true;
+            this.initPlayer(appEvent.data.youtubeId);
+        }
+    }
 
     ngOnInit() {
-        $(window).on('hashchange', this.hashchange.bind(this));
+        // $(window).on('hashchange', this.hashchange.bind(this));
+        this._applicationService.applicationEventEmitter.subscribe(appEvent => {
+            if (appEvent.type === 'player') {
+                console.log('app event', appEvent);
+                this.playerEventProcessor(appEvent);
+            }
+        });
         if (this._storageService.isNewUser) {
             this._isNewUser = true;
             this._menuService.getMenu().subscribe(menu => {
@@ -37,9 +56,18 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
     }
 
     hashchange() {
-        // let hash = location.hash.slice(1);
-        // console.log('here');
-        // let hashValues = hash.split("/");
+        let hash = location.hash.slice(1);
+        let hashValues = hash.split("/");
+        if (hashValues && hashValues.length > 0 && hashValues[0] === 'music-player') {
+
+        }
+
+
+        if (!this._isPlayeReady) {
+            this.initPlayer(hashValues[5]);
+            this._isPlayeReady = true;
+        }
+
         // console.log(hashValues);
         // if (hash.indexOf('Container') > 0) {
         //     // this.focusComponent(this.getAppElement(hash));
@@ -67,6 +95,9 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
             });
         }
 
+        this.progressBar.css('top', height - this.progressBar.height());
+        // this.progressBar.css('width', width);
+
 
         // this.playerMenuEl.style.width = width + 'px';
         // this.playerMenuEl.style.height = height + 'px';
@@ -87,18 +118,31 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         //      console.log(country, playlistId, songIndex);
         //  }
 
+        this.progressBar = $('#myProgress');
+        this.progressBar.on('click touchend', {thisObject:this}, function(e) {
+            console.log('here');                        
+            let newTime = e.data.thisObject.player.getDuration() * ((e.pageX - this.offsetLeft) / $(this).width());
+            e.data.thisObject.player.seekTo(newTime);
+        });
+
     }
 
-    ngAfterViewInitBlah() {
+    onPlayerError(a, b, c) {
+        console.log(a, b, c);
+    }
+
+    initPlayer(videoId: string) {
         // this.youtubeService.getSongs({ name: 'Korean', value: 'Korean' }).subscribe(songs => {
         //     console.log('music loaded');
         // }, err => console.log(err));
+        // #selectCountryList
+        // $()
         let width = $(window).width();
         let ratio: number = 16 / 9;
         this.player = new YT.Player('player', {
             width: width,
             height: Math.ceil(width / ratio),
-            videoId: 'QDiJU9GZrnA',
+            videoId: videoId,
             playerVars: {
                 controls: 0,
                 showinfo: 0,
@@ -113,8 +157,8 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
                 wmode: "transparent"
             },
             events: {
-                // 'onStateChange': this.onPlayerStateChange.bind(this),
-                // 'onError': this.onPlayerError.bind(this)
+                'onStateChange': this.onPlayerStateChange.bind(this),
+                'onError': this.onPlayerError.bind(this)
             }
         });
         this.playerEl = $("#player");
@@ -122,19 +166,68 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         $(window).on('resize', () => this.resizeWindow());
         this.resizeWindow();
 
-        // this.playerMenuButton = $('#cn-button');
-        // this.playerMenuButtonWrapper = $('#cn-wrapper');
+        this.playerMenuButton = $('#cn-button');
+        this.playerMenuButtonWrapper = $('#cn-wrapper');
 
-        // this.playerMenuButton.on('click', (event:Event) => {
-        //     event.stopPropagation();
-        //     this.togglePlayMenu();
-        // });
-        // $('#playListMenu .component').on('click', (event:Event) => {
-        //     console.log('hello');
-        //     event.stopPropagation();
-        //     this.togglePlayMenu()}
-        // );
+        this.playerMenuButton.on('click', (event: Event) => {
+            event.stopPropagation();
+            this.togglePlayMenu();
+        });
+        $('#playListMenu .component').on('click', (event: Event) => {
+            event.stopPropagation();
+            this.togglePlayMenu()
+        }
+        );
+        console.log('hello');
     }
 
+    moveProgressBar() {
+        let playerTimeDifference = (this.player.getCurrentTime() / this.player.getDuration()) * 100;
 
+        this.progressBar.find('#myBar').css('width', playerTimeDifference + '%');
+    }
+
+    onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.PLAYING) {
+            console.log('playing');
+            this.currentMode = YT.PlayerState.PLAYING;
+            this.playPauseString = '&#xf04c;';
+
+            if ($('#playListMenu').css('display') !== 'block') {
+                $('#playListMenu').css('display', 'block');
+                setInterval(() => {
+                    this.moveProgressBar();
+                }, 100);
+            }
+
+        }
+        // if (event.data === YT.PlayerState.ENDED) {
+        //     this.playListEventEmitter.next('next');
+        // }
+        if (event.data === YT.PlayerState.PAUSED) {
+            this.currentMode = YT.PlayerState.PAUSED;
+            this.playPauseString = '&#xf04b;';
+        }
+    }
+
+    togglePlayMenu() {
+        if (this.playerMenuButton.html() !== "Close") {
+            this.playerMenuButton.html("Close");
+            this.playerMenuButtonWrapper.addClass('opened-nav');
+            this.progressBar.css('visibility', 'visible');
+        }
+        else {
+            this.playerMenuButton.html("Menu");
+            this.playerMenuButtonWrapper.removeClass('opened-nav');
+            this.progressBar.css('visibility', 'hidden');
+        }
+    }
+
+    playPauseButton(event: Event) {
+        if (this.currentMode === YT.PlayerState.PLAYING) {
+            this.player.pauseVideo();
+        } else {
+            this.player.playVideo();
+        }
+    }
 }

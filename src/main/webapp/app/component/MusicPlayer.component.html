@@ -1,9 +1,31 @@
 <div class="content">
-    <div *ngIf="_isNewUser">
+    <div id="selectCountryList" *ngIf="!_isPlayeReady">
         <p><strong>What do you feel like listening?!</strong></p>
         <p>
-            <a *ngFor="let country of countries" href="#music-player/playlist/{{country.countryCode}}/top/0" (click)="selectCountryMusic(country)"><img [src]="country.imageUrl" ></a>
+            <a *ngFor="let country of countries" href="#music-player/playlist/{{country.countryCode}}/top/0" (click)="selectCountryMusic(country)"><img [src]="country.imageUrl"></a>
         </p>
     </div>
-     <div id="player"></div>
+    <div id="playerContainer">
+        <div id="playListMenu">
+            <div class="component csstransforms">
+                <button class="cn-button" id="cn-button">Menu</button>
+                <div class="cn-wrapper" id="cn-wrapper">
+                    <ul>
+                        <li><a href="#"><span>&#xf1f8;</span></a></li>
+                        <li><a href="#" [style.color]="toggleRepeatColor"><span>&#xf01e;</span></a></li>
+                        <li><a href="#"><span>&#xf04a;</span></a></li>
+                        <li (click)="playPauseButton($event)"><a href="#"><span [innerHTML]="playPauseString"></span></a></li>
+                        <li><a href="#"><span>&#xf04e;</span></a></li>
+                        <li><a href="#"><span>&#xf074;</span></a></li>
+                        <li><a href="#"><span>&#xf129;</span></a></li>
+                    </ul>
+                </div>
+                <div id="myProgress">
+                    <div id="myBar"></div>
+                </div>
+            </div>
+        </div>
+        <div id="player">
+        </div>
+    </div>
 </div>

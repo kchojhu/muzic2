@@ -10,18 +10,18 @@
             </ul>
         </li>
         <template ngFor let-country [ngForOf]="countries">
-            <li id="playlist-{{country.countryCode}}" [style.display]="country.checked ? 'block': 'none'">
+            <li id="playlist-{{country.countryCode}}" [style.display]="country.checked ? 'block': 'none'" >
                 <span>{{country.country}} Playlist</span>
                 <ul>
                     <li id="playlist-{{country.countryCode}}-top" (click)="showPlayListSongs(country.countryCode + '/top', $event)"><span >Top 100</span>
                         <ul>
                             <li>
-                                <span>Loading...</span>
+                                <span >Loading...</span>
                             </li>
                         </ul>
                     </li>
 
-                    <li id="playlist-{{country.countryCode}}-playlist.id" *ngFor="let playlist of country.playlists" (click)="showPlayListSongs(country.countryCode + '/playlist-' + playlist.id, $event)"><span>{{playlist.name}}</span>
+                    <li id="playlist-{{country.countryCode}}-{{playlist.id}}" *ngFor="let playlist of country.playlists" (click)="showPlayListSongs(country.countryCode + '/playlist-' + playlist.id, $event)"><span>{{playlist.name}}</span>
                         <ul>
                             <li>
                                 <span>Loading...</span>

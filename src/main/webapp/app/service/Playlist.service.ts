@@ -13,16 +13,16 @@ export class PlaylistService {
         return this.songsEventEmitter;
     }
 
-    getSongsByDataRef(dataRef: string): Observable<Array<Song>> {
-        
-        return this._http.get('https://muzic-c46c6.firebaseio.com/playlist/' + dataRef + '.json').map((response: Response) => {
-            let songs:Array<Song> = new Array<Song>();
-            let responseJson = response.json(); 
-            _.each(_.keys(responseJson), (songKey) => {                
-                 songs.push(responseJson[songKey]);
-            });
+    getSongsByDataRef(dataRef: string): Observable<Song[]> {
+        return this._http.get('/chart/playlist-songs?dataRef=playlist/' + dataRef).map((response: Response) => {
+            // let songs:Array<Song> = new Array<Song>();
+            // let responseJson = response.json(); 
+            // _.each(_.keys(responseJson), (songKey) => {
+            //      songs.push(responseJson[songKey]);
+            // });
 
-            return songs;
+            // return songs;
+            return <Song[]>response.json();
         });
     }
 

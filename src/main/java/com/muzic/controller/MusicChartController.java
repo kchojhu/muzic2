@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.api.client.util.Lists;
 import com.google.api.client.util.Maps;
 import com.muzic.model.PlayList;
+import com.muzic.model.Song;
 import com.muzic.model.Songs;
+import com.muzic.service.FirebaseService;
 import com.muzic.service.MusicChartSerice;
 import com.muzic.service.PlayListService;
 
@@ -54,6 +56,10 @@ public class MusicChartController {
 	private PlayListService playListService;
 
 	@Autowired
+	private FirebaseService firebaseService;
+	
+	
+	@Autowired
 	@Qualifier("ituneService")
 	private MusicChartSerice ituneService;
 	private String[] countryList = { "Korean", "American", "Japanese", "Dance" };
@@ -71,39 +77,40 @@ public class MusicChartController {
 		return null;
 	}
 
-	@RequestMapping("/playlist-songs/{playlistId}")
-	public ResponseEntity<Songs> getPlaylistSongsById(@PathVariable String playlistId) {
+	@RequestMapping("/playlist-songs")
+	public ResponseEntity<List<Song>> getPlaylistSongsById(@RequestParam String dataRef) {
 
-		Optional<Songs> songs = playListService.getPlaylistsSongs(playlistId);
+		Optional<List<Song>> songs = firebaseService.readList(dataRef, Song.class);
 
-		if (songs != null && songs.isPresent()) {
-			return new ResponseEntity<Songs>(songs.get(), HttpStatus.OK);
+		if (songs.isPresent()) {
+			return new ResponseEntity<List<Song>>(songs.get(), HttpStatus.OK);
 		}
+		
 		return null;
 	}
-
-	@RequestMapping("/musicDropdown")
-	public ResponseEntity<List<Map<String, String>>> musicDropDownValues() throws IOException {
-		System.out.println("hello");
-		Properties prop = new Properties();
-		prop.load(FileUtils.openInputStream(artistIdFile));
-
-		List<Map<String, String>> values = Lists.newArrayList();
-
-		prop.forEach((k, v) -> {
-			Map<String, String> musicValue = Maps.newHashMap();
-			musicValue.put("name", v.toString());
-			musicValue.put("value", k.toString());
-			values.add(musicValue);
-		});
-
-		return new ResponseEntity<List<Map<String, String>>>(values, HttpStatus.OK);
-	}
-
-	@RequestMapping("/genre/{genreId}")
-	public Songs getGenre(@PathVariable String genreId) {
-		return mellonArtistService.getSongs(genreId);
-	}
+//
+//	@RequestMapping("/musicDropdown")
+//	public ResponseEntity<List<Map<String, String>>> musicDropDownValues() throws IOException {
+//		System.out.println("hello");
+//		Properties prop = new Properties();
+//		prop.load(FileUtils.openInputStream(artistIdFile));
+//
+//		List<Map<String, String>> values = Lists.newArrayList();
+//
+//		prop.forEach((k, v) -> {
+//			Map<String, String> musicValue = Maps.newHashMap();
+//			musicValue.put("name", v.toString());
+//			musicValue.put("value", k.toString());
+//			values.add(musicValue);
+//		});
+//
+//		return new ResponseEntity<List<Map<String, String>>>(values, HttpStatus.OK);
+//	}
+//
+//	@RequestMapping("/genre/{genreId}")
+//	public Songs getGenre(@PathVariable String genreId) {
+//		return mellonArtistService.getSongs(genreId);
+//	}
 	
 	
 	@RequestMapping("/top100")

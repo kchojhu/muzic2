@@ -11,7 +11,7 @@ body
 	font-family: Arial, Helvetica, Verdana;
 	font-size: 14px;
 	line-height: 22px;
-	color: #666;
+	color: #667;
 	position: relative;
 	-webkit-text-size-adjust: none;
 }
@@ -39,7 +39,7 @@ p
 }
 a, a:link, a:active, a:visited, a:hover
 {
-	color: inherit;
+	/*color: inherit;*/
 	text-decoration: none;
 }
 
@@ -80,41 +80,90 @@ nav:not(.mm-menu)
 	bottom: 0;
 	left: 0;
 }
-.header a
-{
-   	font-family: FontAwesome;
-	/*background: center center no-repeat transparent;*/
-	/*background-image: url( data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADhJREFUeNpi/P//PwOtARMDHQBdLGFBYtMq3BiHT3DRPU4YR4NrNAmPJuHRJDyahEeT8Ii3BCDAAF0WBj5Er5idAAAAAElFTkSuQmCC );*/
-	/*display: block;
-	width: 40px;
-	height: 40px;*/
-    font-size: 1.4rem;
-	/*background-color: #222222;*/
+
+
+.header a {
+	font-family: FontAwesome;
+	color: #ccc;
+    font-size: 2.5rem;
+	background-color: transparent;
 	opacity: 0.5;
-	/*text-shadow: 2px 2px 0 #000;*/
-	position: absolute;
-	top: 0;
+	text-shadow: 2px 2px 0 #000;
+	top: 5px;
 	left: 10px;
+	position: absolute;
+	text-align: center;
+	border-radius: 5px;
+	/*padding: 0.5rem;*/
 }
+
+
 .content
 {
-	padding: 150px 50px 50px 50px;
+	/*padding: 150px 50px 50px 50px;*/
 }
+
+.header {
+  position: absolute;
+  z-index: 100;
+}
+
+#selectCountryList {
+  padding-top: 100px;
+  display: block;
+}
+
 .content img {
   margin-left: 10px;
   border-radius: 5px;
   border: 1px solid #000;
 }
 
+iframe {
+  overflow: hidden;
+}
+
+#playerContainer {
+ 	overflow: hidden;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+}
+
 /* begin my stuff */
+#player {
+	position: absolute;
+	/*z-index: 10;*/
+}
+
 #menu span, #menu .mm-title {
   text-transform: capitalize;
 }
 
-li.mm-selected {
-  background-color:#111;
-  color: #fff;
+#menu li:hover, #menu li.mm-selected{
+    background-color: #667;
+  color: #000;
 }
+
+ul li.music-item {
+  clear: both;
+}
+ul li.music-item img.thumb {
+    width: 18%;
+    display: inline-block;
+    vertical-align: middle;
+    border: 2px solid transparent;
+    float: left;
+} 
+
+.title {
+  font-weight: bolder;
+  margin-bottom:3px;
+}
+.artist {
+  font-size: 0.7rem;
+}
+
 
 /* end my stuff */
 

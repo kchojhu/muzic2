@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.google.api.client.util.Maps;
 import com.google.common.collect.Lists;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -23,9 +24,9 @@ import com.muzic.model.Song;
 @Service
 public class FirebaseServiceImpl implements FirebaseService {
 
+	
 	@Value("${firebase.url}")
 	private String firebaseUrl;
-
 	
 	@PostConstruct
 	public void init() {
@@ -95,6 +96,7 @@ public class FirebaseServiceImpl implements FirebaseService {
 //		
 //		
 //	}
+
 	
 
 	
