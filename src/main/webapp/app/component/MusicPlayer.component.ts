@@ -11,6 +11,7 @@ import { Country, AppEvent}  from '../model/Models';
 export class MusicPlayerComponent implements OnInit, AfterViewInit {
     private player: any;
     private playerEl: JQuery;
+    private currentSong: any;
     private _isNewUser: boolean = false;
     private playerMenuButton: JQuery;
     private playPauseString: string = '&#xf04b;';
@@ -25,16 +26,37 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
     }
 
+    playListEvent(command: string) {
+        // if (command === 'repeat') {
+        //     this.toggleRepeatColor = this.toggleRepeatColor === 'white' ? '#429a67' : 'white';
+        // }
+        this._applicationService.applicationEventEmitter.emit({ type: "playlist", action: 'playNextSong', data: { command: command } });
+    }
+
     selectCountryMusic(country: Country) {
         this._storageService.addCountry(country.countryCode);
-        this._applicationService.applicationEventEmitter.emit({ type: 'playlist', data: { country: country.countryCode, playlist: 'top', songIndex: 0 } });
+        this._applicationService.applicationEventEmitter.emit({ type: 'playlist', action: 'openPlaylist', data: { country: country.countryCode, playlist: 'top', songIndex: 0 } });
     }
 
     playerEventProcessor(appEvent) {
-        if (!this._isPlayeReady) {
-            this._isPlayeReady = true;
-            this.initPlayer(appEvent.data.youtubeId);
+
+        switch (appEvent.action) {
+            case 'play':
+                this.currentSong = appEvent.data;
+
+                if (!this._isPlayeReady) {
+                    this._isPlayeReady = true;
+                    console.log('init song:' + this.currentSong.youtubeId);
+                    this.initPlayer(this.currentSong.youtubeId);
+
+                } else {
+                    console.log('xxx song:' + this.currentSong.youtubeId);
+                    this.player.loadVideoById(this.currentSong.youtubeId);
+                }
+                break;
         }
+
+
     }
 
     ngOnInit() {
@@ -119,16 +141,16 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         //  }
 
         this.progressBar = $('#myProgress');
-        this.progressBar.on('click touchend', {thisObject:this}, function(e) {
-            console.log('here');                        
+        this.progressBar.on('click touchend', { thisObject: this }, function (e) {
+            console.log('here');
             let newTime = e.data.thisObject.player.getDuration() * ((e.pageX - this.offsetLeft) / $(this).width());
             e.data.thisObject.player.seekTo(newTime);
         });
 
     }
 
-    onPlayerError(a, b, c) {
-        console.log(a, b, c);
+    onPlayerError(error) {
+        console.log(error);
     }
 
     initPlayer(videoId: string) {
@@ -191,6 +213,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         if (event.data === YT.PlayerState.PLAYING) {
             console.log('playing');
             this.currentMode = YT.PlayerState.PLAYING;
+            location.hash = this.currentSong.dataRef;
             this.playPauseString = '&#xf04c;';
 
             if ($('#playListMenu').css('display') !== 'block') {

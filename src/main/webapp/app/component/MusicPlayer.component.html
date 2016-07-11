@@ -15,7 +15,7 @@
                         <li><a href="#" [style.color]="toggleRepeatColor"><span>&#xf01e;</span></a></li>
                         <li><a href="#"><span>&#xf04a;</span></a></li>
                         <li (click)="playPauseButton($event)"><a href="#"><span [innerHTML]="playPauseString"></span></a></li>
-                        <li><a href="#"><span>&#xf04e;</span></a></li>
+                        <li (click)="playListEvent('next')"> <a href="#"><span>&#xf04e;</span></a></li>
                         <li><a href="#"><span>&#xf074;</span></a></li>
                         <li><a href="#"><span>&#xf129;</span></a></li>
                     </ul>

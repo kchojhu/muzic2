@@ -27,7 +27,7 @@ export class AppComponent implements AfterViewInit {
         console.log(hashValues);
         if (hashValues && hashValues.length >0 && hashValues[0] ==='music-player') {
             // this.focusComponent(this.getAppElement(hash));
-            this._applicationService.applicationEventEmitter.emit({ type: 'playlist', data: { country: hashValues[2], playlist: hashValues[3], songIndex: hashValues[4]} });
+            this._applicationService.applicationEventEmitter.emit({ type: 'playlist', action : 'openPlaylist', data: { country: hashValues[2], playlist: hashValues[3], songIndex: hashValues[4]} });
         }
 
 
