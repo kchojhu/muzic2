@@ -1,5 +1,6 @@
 package com.muzic.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,10 +8,11 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import com.google.api.client.util.Maps;
 import com.google.common.collect.Lists;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -19,11 +21,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.muzic.model.Song;
 
 @Service
 public class FirebaseServiceImpl implements FirebaseService {
 
+	@Autowired
+	private RestTemplate restTemplate;
 	
 	@Value("${firebase.url}")
 	private String firebaseUrl;
@@ -56,6 +59,7 @@ public class FirebaseServiceImpl implements FirebaseService {
 	public void writeList(String dataPoint, List objects, boolean override) {
 		
 		try {
+			System.out.println("write:" + dataPoint);
 			if (!override && dataRefExists(dataPoint)) {
 				return;
 			}
@@ -97,7 +101,19 @@ public class FirebaseServiceImpl implements FirebaseService {
 //		
 //	}
 
-	
+	@Override
+	public Optional<Map<String, Object>> read(String dataPoint) {
+		try {
+			System.out.println(firebaseUrl + dataPoint + ".json");
+			Map<String, Object> result = restTemplate.getForObject(firebaseUrl + dataPoint + ".json", Map.class);
+			
+			return Optional.of(result);	
+			
+		} catch (Exception e) {
+			new RuntimeException(e);
+		}
+		return Optional.of(new HashMap<String, Object>());
+	}
 
 	
 	@Override

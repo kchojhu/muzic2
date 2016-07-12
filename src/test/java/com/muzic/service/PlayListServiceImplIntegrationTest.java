@@ -35,6 +35,15 @@ public class PlayListServiceImplIntegrationTest extends Muzic2ApplicationTests{
 		System.out.println(songs.get().getSongs());		
 	}
 	
-
+	@Test
+	public void refreshUSPlaylist() {
+		playListService.refreshUSPlaylist();
+//		System.out.println("test".matches("^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _()-]*"));
+		
+	}
+	
+	public static void main(String[] args) {
+		System.out.println("사랑에 빠지고 싶다".matches("^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _()-]*"));
+	}
 	
 }

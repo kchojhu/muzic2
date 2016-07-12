@@ -2,6 +2,7 @@ package com.muzic.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface FirebaseService {
@@ -11,5 +12,7 @@ public interface FirebaseService {
 	<T> Optional<List<T>> readList(String dataPoint, Class<T> t);
 
 	void writeList(String dataPoint, List objects, boolean override);
+
+	Optional<Map<String, Object>> read(String dataPoint);
 
 }

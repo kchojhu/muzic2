@@ -109,4 +109,16 @@ public class UsPoPServiceImpl implements MusicChartSerice {
 		return null;
 	}
 
+	@Override
+	public Songs getSongs(boolean useCache) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Songs getSongs(String country, boolean useCache) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

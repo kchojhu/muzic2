@@ -12,13 +12,14 @@ export class MenuService {
 
     getMenu(): Observable<any> {
 
-        return this._http.get('https://muzic-c46c6.firebaseio.com/menu.json').map((response: Response) => {
+        return this._http.get('/chart/firebase?dataRef=menu').map((response: Response) => {
             return response.json();
         });
     }
 
     getPlaylist(country:string) : Observable<Array<Playlist>>  {
-        return this._http.get('https://muzic-c46c6.firebaseio.com/playlist/' + country + '/playlist.json').map((response: Response) => {
+        return this._http.get('/chart/firebase?dataRef=playlist/' + country + '/playlist').map((response: Response) => {
+            console.log('byte', response.totalBytes);
             let playlists = response.json();
             let playlistsArray:Array<Playlist> = new Array<Playlist>();
             _.each(_.keys(playlists), (playlistKey: string) => {

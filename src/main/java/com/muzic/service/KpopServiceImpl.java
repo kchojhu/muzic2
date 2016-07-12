@@ -43,16 +43,21 @@ public class KpopServiceImpl implements MusicChartSerice {
 	private FirebaseService firebaseService;
 	
 	
-	@SuppressWarnings("unchecked")
+	@Scheduled(fixedRate = 3600000)
 	@Override
-	public Songs getSongs() {
+	public void refreshSongs() {
+		getSongs(false);
+	}
+	
+	@Override
+	public Songs getSongs(boolean useCache) {
 		LocalDate now = LocalDate.now();
 
 		Songs songs = new Songs();
 
 		Optional<List<Song>> results = firebaseService.readList(playlistKey, Song.class);
 		
-		if (results.isPresent()) {
+		if (results.isPresent() && useCache) {
 			songs.getSongs().addAll(results.get());
 			return songs;
 		}
@@ -103,6 +108,14 @@ public class KpopServiceImpl implements MusicChartSerice {
 		firebaseService.writeList(playlistKey + "-" + ApplicationUtil.getDateFormatKey(now), songs.getSongs());
 		
 		return songs;
+
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Songs getSongs() {
+		return getSongs(true);
 	}
 
 	@Override
@@ -110,5 +123,12 @@ public class KpopServiceImpl implements MusicChartSerice {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Songs getSongs(String country, boolean useCache) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

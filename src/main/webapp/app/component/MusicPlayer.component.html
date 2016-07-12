@@ -11,13 +11,13 @@
                 <button class="cn-button" id="cn-button">Menu</button>
                 <div class="cn-wrapper" id="cn-wrapper">
                     <ul>
-                        <li><a href="#"><span>&#xf1f8;</span></a></li>
-                        <li><a href="#" [style.color]="toggleRepeatColor"><span>&#xf01e;</span></a></li>
-                        <li><a href="#"><span>&#xf04a;</span></a></li>
-                        <li (click)="playPauseButton($event)"><a href="#"><span [innerHTML]="playPauseString"></span></a></li>
-                        <li (click)="playListEvent('next')"> <a href="#"><span>&#xf04e;</span></a></li>
-                        <li><a href="#"><span>&#xf074;</span></a></li>
-                        <li><a href="#"><span>&#xf129;</span></a></li>
+                        <li><a href="javascript:void(0)"><span>&#xf1f8;</span></a></li>
+                        <li (click)="toggleLoopButton()"><a href="javascript:void(0)" [style.color]="loopSongMode? '#4bd963':'#fff'"><span>&#xf01e;</span></a></li>
+                        <li (click)="playListEvent('prev')"><a href="javascript:void(0)"><span>&#xf04a;</span></a></li>
+                        <li (click)="playPauseButton($event)"><a href="javascript:void(0)"><span [innerHTML]="playPauseString"></span></a></li>
+                        <li (click)="playListEvent('next')"> <a href="javascript:void(0)"><span>&#xf04e;</span></a></li>
+                        <li (click)="toggleRandomButton()"><a href="javascript:void(0)" [style.color]="randomSongMode? '#4bd963':'#fff'"><span>&#xf074;</span></a></li>
+                        <li><a href="javascript:void(0)"><span>&#xf129;</span></a></li>
                     </ul>
                 </div>
                 <div id="myProgress">

@@ -12,7 +12,4 @@ public class ApplicationUtil {
 	}
 	
 	
-	public static void main(String[] args) {
-		System.out.println(ApplicationUtil.getDateFormatKey(LocalDate.now()));
-	}
 }

@@ -27,9 +27,8 @@ import com.muzic.util.ApplicationUtil;
 
 @Service("playServiceService")
 public class PlayListServiceImpl implements PlayListService {
-
 	private String playlistKey = "playlist/kr/playlist";
-	
+
 	@Value("${korean.playlist.url}")
 	private String playListUrl;
 
@@ -42,15 +41,50 @@ public class PlayListServiceImpl implements PlayListService {
 	@Autowired
 	private YoutubeService youtubeService;
 	
+	private String englishOnlyRegex = "^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _()-]*";
+
 	@Autowired
 	private FirebaseService firebaseService;
 	private String newPlayListCacheKey = "START_DATE";
 	private String topFavPlayListCacheKey = "CNT_LIKE";
-	
+
 	@Scheduled(fixedRate = 3600000)
 	public void refreshSongs() {
+		getPlaylists("START_DATE", false);
 	}
-	
+
+	@Override
+	public void refreshUSPlaylist() {
+		Optional<Set<PlayList>> playlists = getPlaylists("START_DATE");
+		List<PlayList> englishPlayLists = Lists.newArrayList();
+		playlists.ifPresent(playlistSet-> {
+			playlistSet.forEach(playlist-> {
+				Optional<Songs> playlistSongs = getPlaylistsSongs(playlist.getId());
+				playlistSongs.ifPresent(songs-> {
+					List<Song> englishSongs = Lists.newArrayList();
+					
+					songs.getSongs().forEach(song-> {
+						if ((song.getArtistName() + song.getSongName()).matches(englishOnlyRegex)){							
+							System.out.println(song.getArtistName() + ":" + song.getSongName());
+							englishSongs.add(song);
+						}
+					});
+					if (englishSongs.size() > 10) {
+						System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+						englishPlayLists.add(playlist);
+						firebaseService.writeList("playlist/us/playlist-"+playlist.getId(), englishSongs);
+					}
+				});
+			});
+			
+		});
+		if (englishPlayLists.size() > 0) {
+			firebaseService.writeList("playlist/us/playlist", englishPlayLists);
+		}
+		
+		
+	}
+
 	private Optional<String> getPlayListId(String playListId) {
 		Pattern pattern = Pattern.compile("(\\d+)");
 		Matcher matcher = pattern.matcher(playListId);
@@ -77,14 +111,18 @@ public class PlayListServiceImpl implements PlayListService {
 
 	@Override
 	public Optional<Set<PlayList>> getPlaylists(String type) {
+		return getPlaylists(type, true);
+	}
+
+	@Override
+	public Optional<Set<PlayList>> getPlaylists(String type, boolean useCache) {
 		Optional<List<PlayList>> results = firebaseService.readList(playlistKey, PlayList.class);
-		
-		if (results.isPresent() && false) {
+
+		if (results.isPresent() && useCache) {
 			Set<PlayList> playListSet = Sets.newHashSet(results.get().iterator());
 			return Optional.of(playListSet);
 		}
 
-		
 		Set<PlayList> playListSet = new LinkedHashSet<>();
 		for (int i = 0; i < 100; i += 20) {
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(playListUrl
@@ -113,11 +151,11 @@ public class PlayListServiceImpl implements PlayListService {
 
 		if (playListSet != null && !playListSet.isEmpty()) {
 			firebaseService.writeList(playlistKey, Lists.newArrayList(playListSet));
-			
+
 			playListSet.forEach(playList -> {
 				getPlaylistsSongs(playList.getId());
 			});
-			
+
 			return Optional.of(playListSet);
 		}
 
@@ -130,13 +168,13 @@ public class PlayListServiceImpl implements PlayListService {
 
 		Songs songs = new Songs();
 
-		Optional<List<Song>> results = firebaseService.readList(playlistKey + "-playListId", Song.class);
-		
+		Optional<List<Song>> results = firebaseService.readList(playlistKey + "-" + playListId, Song.class);
+
 		if (results.isPresent()) {
 			songs.getSongs().addAll(results.get());
 			return Optional.of(songs);
 		}
-		
+
 		UriComponentsBuilder builder = UriComponentsBuilder
 				.fromHttpUrl(playListIdUrl.replaceFirst("playlistIdValue", playListId));
 		UriComponents components = builder.build(true);
@@ -144,7 +182,7 @@ public class PlayListServiceImpl implements PlayListService {
 		Map<String, Object> result = restTemplate.getForObject(components.toUri(), Map.class);
 
 		if (result != null && result.containsKey("results")) {
-			List<Map<String, Object>> resultsMap = (List<Map<String, Object>>) result.get("results");			
+			List<Map<String, Object>> resultsMap = (List<Map<String, Object>>) result.get("results");
 			if (resultsMap != null && !resultsMap.isEmpty()) {
 				List<Song> songList = resultsMap.stream().map(resultMap -> {
 					Song song = new Song();
@@ -153,7 +191,7 @@ public class PlayListServiceImpl implements PlayListService {
 						song.setRank(Integer.valueOf(resultMap.get("rank").toString()));
 						song.setSongName(resultMap.get("title/_text").toString());
 
-						return song;						
+						return song;
 					} catch (Exception e) {
 						System.out.println(song);
 						e.printStackTrace();
@@ -162,11 +200,12 @@ public class PlayListServiceImpl implements PlayListService {
 				}).filter(p -> p != null).collect(Collectors.toList());
 
 				if (songList != null && !songList.isEmpty()) {
-					
+
 					songList.parallelStream().unordered().forEach(song -> {
 						youtubeService.getSong(song);
 					});
-					songs.setSongs(songList.stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
+					songs.setSongs(
+							songList.stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
 					firebaseService.writeList(playlistKey + "-" + playListId, songs.getSongs(), false);
 					return Optional.of(songs);
 				}

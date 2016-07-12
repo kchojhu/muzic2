@@ -37,18 +37,49 @@ public class ItuneServiceImpl implements MusicChartSerice {
 	@Autowired
 	private FirebaseService firebaseService;
 
+
+	@Scheduled(fixedRate = 3600000)
+	public void refreshSongsInterval() {
+		refreshSongs(false);
+	}
 	
-	@Scheduled(fixedRate = 86400)
-	public void refreshSongs(String country) {
+	@Override
+	public void refreshSongs(Boolean useCache) {
+		Optional<Map<String, Object>> menu = firebaseService.read("menu");
+		menu.ifPresent(menuMap-> {
+			Map<String, Object> countriesMap = (Map<String, Object>) menuMap.get("countries");
+			
+			countriesMap.values().forEach((country) -> {
+				Map<String, Object> countryMap = (Map<String, Object>) country;
+				String countryCode = countryMap.get("countryCode").toString();
+				System.out.println("countryCode" + countryCode);
+				if (!countryCode.equalsIgnoreCase("kr")) {
+					getSongs(countryCode, useCache);					
+				}
+			});
+			
+		});
+		
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public Songs getSongs(String country) {
+		return getSongs(country, true);
+	}
+
+	@Override
+	public Songs getSongs() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Songs getSongs(String country, boolean useCache) {
 		LocalDate now = LocalDate.now();
 		Songs songs = new Songs();
 		Optional<List<Song>> results = firebaseService.readList(playlistKey + country + "/top", Song.class);
-		if (results.isPresent()) {
+		if (results.isPresent() && useCache) {
 			songs.getSongs().addAll(results.get());
 			return songs;
 		}
@@ -94,12 +125,19 @@ public class ItuneServiceImpl implements MusicChartSerice {
 		firebaseService.writeList(playlistKey + country + "/top", songs.getSongs());
 
 		return songs;
+
 	}
 
 	@Override
-	public Songs getSongs() {
+	public Songs getSongs(boolean useCache) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void refreshSongs() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -11,6 +11,10 @@ public interface PlayListService {
 	Optional<Set<PlayList>> getPlaylists(String type);
 	
 	Optional<Songs> getPlaylistsSongs(String playListId);
+
+	Optional<Set<PlayList>> getPlaylists(String type, boolean useCache);
+
+	void refreshUSPlaylist();
 	
 	
 }

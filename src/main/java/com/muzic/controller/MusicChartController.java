@@ -41,10 +41,6 @@ public class MusicChartController {
 	private MusicChartSerice usPopService;
 
 	@Autowired
-	@Qualifier("jPoPService")
-	private MusicChartSerice jPopService;
-
-	@Autowired
 	@Qualifier("mellonService")
 	private MusicChartSerice mellonService;
 
@@ -67,6 +63,29 @@ public class MusicChartController {
 	private File artistIdFile = new File(
 			System.getProperty("user.home") + File.separator + "tmp3" + File.separator + "artistId.properties");
 
+	@RequestMapping("/firebase")
+	public Map<String, Object> getFirebase(String dataRef) {
+		Optional<Map<String, Object>> result = firebaseService.read(dataRef);
+		if (result.isPresent()) {
+			return result.get();
+		}
+		return null;
+		
+	}
+	
+	
+	@RequestMapping("/refreshplaylist")
+	public void refreshPlaylist() {
+		kPopService.refreshSongs();
+		playListService.refreshUSPlaylist();
+		ituneService.refreshSongs();
+	}
+	
+	@RequestMapping("/refreshitune")
+	public void refreshItune(@RequestParam(required=false, value="true") Boolean useCache) {
+		ituneService.refreshSongs(useCache);
+	}
+	
 	@RequestMapping("/playlist/{playlistType}")
 	public ResponseEntity<Set<PlayList>> getPlaylist(@PathVariable String playlistType) {
 
@@ -125,7 +144,7 @@ public class MusicChartController {
 		case "America":
 			return usPopService.getSongs();
 		case "Japan":
-			return jPopService.getSongs();
+			return mellonService.getSongs(country);
 		case "Dance":
 			return mellonService.getSongs(country);
 		}

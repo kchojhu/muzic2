@@ -53,7 +53,7 @@ gulp.task('build-copy', function () {
     gulp.src([src + 'app/**/*.html', src + 'app/**/*.htm', src + 'app/**/*.css'])
         .pipe(gulp.dest(dist + 'app'));
 
-    gulp.src([src + 'index.html'])
+    gulp.src([src + 'index.html', src + 'chat.html'])
         .pipe(gulp.dest(dist));
 
     return gulp.src([src + 'systemjs.config.js'])

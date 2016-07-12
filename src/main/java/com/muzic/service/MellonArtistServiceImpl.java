@@ -119,4 +119,22 @@ public class MellonArtistServiceImpl implements MusicChartSerice {
 		return null;
 	}
 
+	@Override
+	public Songs getSongs(boolean useCache) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void refreshSongs() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Songs getSongs(String country, boolean useCache) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

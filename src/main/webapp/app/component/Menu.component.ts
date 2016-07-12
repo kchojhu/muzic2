@@ -16,7 +16,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
     private _countriesUpdated: boolean = false;
     private _playListUpdated: boolean = false;
     private _menuApi: any;
-    private _menu:JQuery;
+    private _menu: JQuery;
     private _initializePlayListMenu: boolean = false;
     private currentPlaylistSongs: Song[];
     constructor(private _menuService: MenuService, private _storageService: StorageService, private _applicationService: ApplicationService, private _playlistService: PlaylistService) {
@@ -55,14 +55,23 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
     }
 
     initPlaylistMenu() {
-        let loadingPlayListElement: JQuery = this._menu.find("span:contains('Loading...')");
-        if ($(loadingPlayListElement[1]).closest('div.mm-panel').length > 0) {
-            let playListMenu = $(loadingPlayListElement[1]).closest('div.mm-panel');
-            if (playListMenu.length > 0) {
+
+        let currentlyOpenedPanel: JQuery = this._menu.find("div.mm-panel.mm-opened");
+        if (currentlyOpenedPanel.length > 0) {
+            if (currentlyOpenedPanel.find("span:contains('Loading...')").length > 0) {
                 this._initializePlayListMenu = true;
-                this._menuApi.init(playListMenu);
+                this._menuApi.init(currentlyOpenedPanel);
             }
         }
+
+        // let loadingPlayListElement: JQuery = this._menu.find("span:contains('Loading...')");
+        // if ($(loadingPlayListElement[1]).closest('div.mm-panel').length > 0) {
+        //     let playListMenu = $(loadingPlayListElement[1]).closest('div.mm-panel');
+        //     if (playListMenu.length > 0) {
+        //         this._initializePlayListMenu = true;
+        //         this._menuApi.init(playListMenu);
+        //     }
+        // }
     }
 
     ngAfterViewChecked() {
@@ -108,6 +117,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
 
                     let checkExist = setInterval(() => {
                         if ($($(playlistSongsSelector).find('a').attr('data-target')).find('li>a').length) {
+
                             $($(playlistSongsSelector).find('a').attr('data-target')).find('li>a')[appEvent.data.songIndex].click();
                             clearInterval(checkExist);
                         }
@@ -117,21 +127,46 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         }, timeoutWait);
     }
 
-    selectNextSong(event:AppEvent) {
-        let parentMenu = this._menu.find('li.music-item'); 
+    selectNextSong(event: AppEvent) {
+        let selectedMusic: JQuery = this._menu.find('li.music-item.mm-selected');
+        if (selectedMusic.length === 0) {
+            return;
+        }
         switch (event.data.command) {
             case 'next':
                 if (this._menu.find('li.music-item.mm-selected').next().length > 0) {
-                    this._menu.find('li.music-item.mm-selected').next().find('a')[0].click();
+                    this._menu.find('li.music-item.mm-selected').next().find('a').trigger('click');
                 } else {
-                    $(parentMenu[0]).find('a')[0].click();
+                    selectedMusic.parent().find('li.music-item').first().find('a').trigger('click');
                 }
-            break;
+                break;
             case 'prev':
-            break;
+                if (this._menu.find('li.music-item.mm-selected').prev().length > 0) {
+                    this._menu.find('li.music-item.mm-selected').prev().find('a').trigger('click');
+                } else {
+                    selectedMusic.parent().find('li.music-item').last().find('a').trigger('click');
+                }
+                break;
+            case 'loop':
+                this._menu.find('li.music-item.mm-selected').find('a').trigger('click');
+                break;
             case 'random':
-            break;
+                let randomSongItem: JQuery;
+                // data-youtubeId
+                let currentSongId = this._menu.find('li.music-item.mm-selected').attr('data-youtubeId');
+                let songItems = selectedMusic.parent().find('li.music-item');
+                while (!randomSongItem) {
+                    randomSongItem = songItems.eq(Math.floor(Math.random() * songItems.length));
+                    if (randomSongItem.attr('data-youtubeId') === currentSongId) {
+                        randomSongItem = null;
+                    }
+                }
+                randomSongItem.find('a').trigger('click');
+                break;
         }
+
+
+
 
     }
 
@@ -143,6 +178,9 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                         this.activatePlayList(event);
                         break;
                     case 'playNextSong':
+                        this.selectNextSong(event);
+                        break;
+                    case 'playPrevSong':
                         this.selectNextSong(event);
                         break;
                 }
@@ -179,6 +217,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
 
     ngAfterViewInit() {
 
+
         $('nav#menu').mmenu({
             extensions: ['effect-slide-menu', 'pageshadow'],
             onClick: {
@@ -203,15 +242,15 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                 $(previousItem).parent().removeClass('mm-selected');
             }
             let youtubeId = selectedItem.attr('data-youtubeId');
-            let dataRef:string;
+            let dataRef: string;
             if (youtubeId === undefined && selectedItem[0].tagName === 'A') {
                 youtubeId = $(selectedItem).parent().attr('data-youtubeId');
                 dataRef = selectedItem.attr('href');
             } else {
                 dataRef = $(selectedItem).find('a').attr('href');
             }
-
-            this._applicationService.applicationEventEmitter.emit({ type: 'player', action: 'play', data: { youtubeId: youtubeId,  dataRef:dataRef} });
+            $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
+            this._applicationService.applicationEventEmitter.emit({ type: 'player', action: 'play', data: { youtubeId: youtubeId, dataRef: dataRef } });
 
 
         });

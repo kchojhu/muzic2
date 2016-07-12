@@ -18,10 +18,11 @@
     <script src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.mmenu/5.6.5/js/jquery.mmenu.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.mmenu/5.6.5/addons/toggles/jquery.mmenu.toggles.min.js" type="text/javascript"></script>
-   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lockr/0.8.4/lockr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jQuery.mmenu/5.6.5/css/jquery.mmenu.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jQuery.mmenu/5.6.5/addons/toggles/jquery.mmenu.toggles.css" type="text/css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jQuery.mmenu/5.6.5/addons/toggles/jquery.mmenu.toggles.css" type="text/css"
+        rel="stylesheet" />
     <link rel="stylesheet" href="app/style.css">
     <link rel="stylesheet" href="app/playMenu.css">
 </head>
@@ -29,8 +30,15 @@
 <body>
 
     <div mz-app></div>
-    <script>
+    <script>        
         $(function() {
+            jQuery.fn.scrollTo = function(elem, speed) { 
+                $(this).animate({
+                    scrollTop:  $(this).scrollTop() - $(this).offset().top + $(elem).offset().top   
+                    }, speed == undefined ? 1000 : speed); 
+                return this; 
+            };
+
 			var tag = document.createElement('script');
 			tag.src = "//www.youtube.com/iframe_api";
 			var firstScriptTag = document.getElementsByTagName('script')[0];

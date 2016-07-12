@@ -21,9 +21,19 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
     private countries: Array<Country> = new Array<Country>();
     private progressBar: JQuery;
     private progressBarInterval: any;
+    private loopSongMode: boolean = false;
+    private randomSongMode: boolean = false;
 
     constructor(private _storageService: StorageService, private _menuService: MenuService, private _applicationService: ApplicationService) {
 
+    }
+    toggleRandomButton() {
+        this.randomSongMode = !this.randomSongMode;
+        this.loopSongMode = false;
+    }
+    toggleLoopButton() {
+        this.loopSongMode = !this.loopSongMode;
+        this.randomSongMode = false;
     }
 
     playListEvent(command: string) {
@@ -215,7 +225,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
             this.currentMode = YT.PlayerState.PLAYING;
             location.hash = this.currentSong.dataRef;
             this.playPauseString = '&#xf04c;';
-
+            this.progressBar.css('visibility', 'hidden');
             if ($('#playListMenu').css('display') !== 'block') {
                 $('#playListMenu').css('display', 'block');
                 setInterval(() => {
@@ -224,16 +234,29 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
             }
 
         }
-        // if (event.data === YT.PlayerState.ENDED) {
-        //     this.playListEventEmitter.next('next');
-        // }
+        if (event.data === YT.PlayerState.ENDED) {
+            if (this.loopSongMode) {
+                this.playListEvent('loop');
+            } if (this.randomSongMode) {
+                this.playListEvent('random');
+            } else {
+                this.playListEvent('next');
+            }
+        }
         if (event.data === YT.PlayerState.PAUSED) {
             this.currentMode = YT.PlayerState.PAUSED;
             this.playPauseString = '&#xf04b;';
         }
     }
 
-    togglePlayMenu() {
+    togglePlayMenu(mode?: string) {
+        if (mode && mode === 'close') {
+            this.playerMenuButton.html("Menu");
+            this.playerMenuButtonWrapper.removeClass('opened-nav');
+            this.progressBar.css('visibility', 'hidden');
+            return;
+        }
+
         if (this.playerMenuButton.html() !== "Close") {
             this.playerMenuButton.html("Close");
             this.playerMenuButtonWrapper.addClass('opened-nav');

@@ -24,5 +24,11 @@ public class ItuneServiceImplIntegrationTest extends Muzic2ApplicationTests{
 		
 	}
 
+	@Test
+	public void refresh() throws Exception {
+		ituneService.refreshSongs();
+	}
+	
+	
 	
 }
