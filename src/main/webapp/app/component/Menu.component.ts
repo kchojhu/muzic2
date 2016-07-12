@@ -55,12 +55,10 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
     }
 
     initPlaylistMenu() {
-
-        let currentlyOpenedPanel: JQuery = this._menu.find("div.mm-panel.mm-opened");
+        let currentlyOpenedPanel: JQuery = this._menu.find("div.mm-panel.mm-current");
         if (currentlyOpenedPanel.length > 0) {
             if (currentlyOpenedPanel.find("span:contains('Loading...')").length > 0) {
-                this._initializePlayListMenu = true;
-                this._menuApi.init(currentlyOpenedPanel);
+ this._menuApi.init(currentlyOpenedPanel);
             }
         }
 
@@ -101,7 +99,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
 
     activatePlayList(appEvent: AppEvent) {
         this._menuApi.open();
-        let timeoutWait = 400;
+        let timeoutWait = 500;
         setTimeout(() => {
             let panel = $($('#menu-country').find('a').attr('data-target'));
             this._menuApi.openPanel(panel);
@@ -111,17 +109,20 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                 }).checked = true;
                 setTimeout(() => {
                     let playlistPanel = $($('#playlist-' + appEvent.data.country + "-" + appEvent.data.playlist).find('a').attr('data-target'));
-                    this._menuApi.openPanel(playlistPanel);
-                    let playlistSongsSelector = '#playlist-' + appEvent.data.country + '-' + appEvent.data.playlist;
-                    $(playlistSongsSelector + ' a')[0].click();
+                    // this._menuApi.openPanel(playlistPanel);
+                    playlistPanel.trigger('click');
+                    // let playlistSongsSelector = '#playlist-' + appEvent.data.country + '-' + appEvent.data.playlist;
+                    // $(playlistSongsSelector + ' a')[0].click();
 
-                    let checkExist = setInterval(() => {
-                        if ($($(playlistSongsSelector).find('a').attr('data-target')).find('li>a').length) {
+                    // let checkExist = setInterval(() => {
+                    //     if ($($(playlistSongsSelector).find('a').attr('data-target')).find('li>a').length) {
+                    //         setTimeout(()=> {
+                    //             $($(playlistSongsSelector).find('a').attr('data-target')).find('li>a')[appEvent.data.songIndex].click();
+                    //         }, 3000);
 
-                            $($(playlistSongsSelector).find('a').attr('data-target')).find('li>a')[appEvent.data.songIndex].click();
-                            clearInterval(checkExist);
-                        }
-                    }, 100);
+                    //         clearInterval(checkExist);
+                    //     }
+                    // }, timeoutWait);
                 }, timeoutWait);
             }, timeoutWait);
         }, timeoutWait);
