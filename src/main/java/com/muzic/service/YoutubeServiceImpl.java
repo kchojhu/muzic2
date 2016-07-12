@@ -2,6 +2,7 @@ package com.muzic.service;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Period;
@@ -10,9 +11,9 @@ import org.joda.time.format.ISOPeriodFormat;
 import org.joda.time.format.PeriodFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.muzic.model.Song;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -20,6 +21,8 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.Thumbnail;
 import com.google.api.services.youtube.model.VideoListResponse;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.muzic.model.Song;
 
 @Service
 public class YoutubeServiceImpl implements YoutubeService {
@@ -34,13 +37,32 @@ public class YoutubeServiceImpl implements YoutubeService {
 	private Integer musicDuration;
 	
 	@Autowired
+	private FirebaseService firebaseService;
+	
+	@Autowired
 	private YouTube youtube;
+	
+	private Set<String> youtubeFilterKeywords = Sets.newHashSet();
 	
 	public Song changeSong(String playlistId, Song song) {
 		
 		return null;
 	}
 
+	@Scheduled(fixedRate = 3600000)
+	public void refreshConfiguration() {
+		youtubeFilterKeywords.clear();
+		youtubeFilterKeywords.addAll(Sets.newHashSet(firebaseService.read("configuration/youtubeFilterKeyword",String.class).get().split(",")));
+	}
+	
+	public Set<String> getYoutubeFilterKeywords() {
+		if (youtubeFilterKeywords.isEmpty()) {
+			refreshConfiguration();
+		}
+		
+		return youtubeFilterKeywords;
+	}
+	
 	private static void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
 
 		System.out.println("\n=============================================================");
@@ -104,8 +126,14 @@ public class YoutubeServiceImpl implements YoutubeService {
 			if (searchResultList != null) {				
 				for (SearchResult searchResult : searchResultList) {
 					String title = searchResult.getSnippet().getTitle().replaceAll("'", "").replaceAll("`", "");
-					
-					if (title.contains("노래방") || title.contains("karaoke") || title.contains("기타강의") || !title.toLowerCase().contains(songName.toLowerCase())) {
+					boolean filter = false;
+					for (String titleFilter : getYoutubeFilterKeywords()) {
+						if (title.contains(titleFilter)) {
+							filter = true;
+							break;
+						}
+					}
+					if (filter || !title.toLowerCase().contains(songName.toLowerCase())) {
 						continue;
 					}
 					

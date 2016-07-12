@@ -34,6 +34,20 @@ public class FirebaseServiceImplIntegrationTest extends Muzic2ApplicationTests {
 	}
 	
 	@Test
+	public void write() throws Exception {
+		CountDownLatch countDownLatch = new CountDownLatch(1);
+		Map<String, Object> configMap = Maps.newHashMap();
+		configMap.put("youtubeFilterKeyword", "a,b,c");
+		firebaseService.write("configuration",configMap);
+		countDownLatch.await(10, TimeUnit.SECONDS);
+	}
+	
+	@Test
+	public void read() throws Exception {
+		System.out.println(firebaseService.read("configuration/youtubeFilterKeyword",String.class).get());
+	}
+	
+	@Test
 	public void update() throws Exception {
 		CountDownLatch countDownLatch = new CountDownLatch(1);
 		Map<String, Object> updateMap = Maps.newHashMap();

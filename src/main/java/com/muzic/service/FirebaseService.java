@@ -15,4 +15,10 @@ public interface FirebaseService {
 
 	Optional<Map<String, Object>> read(String dataPoint);
 
+	boolean dataRefExists(String dataPoint);
+	
+	void write(String dataPoint, Map<String, Object> map);
+
+	<T>Optional<T> read(String dataPoint, Class<T> t);
+
 }

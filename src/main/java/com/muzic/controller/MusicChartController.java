@@ -58,10 +58,6 @@ public class MusicChartController {
 	@Autowired
 	@Qualifier("ituneService")
 	private MusicChartSerice ituneService;
-	private String[] countryList = { "Korean", "American", "Japanese", "Dance" };
-
-	private File artistIdFile = new File(
-			System.getProperty("user.home") + File.separator + "tmp3" + File.separator + "artistId.properties");
 
 	@RequestMapping("/firebase")
 	public Map<String, Object> getFirebase(String dataRef) {

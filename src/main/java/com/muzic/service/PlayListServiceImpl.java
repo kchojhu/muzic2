@@ -70,9 +70,10 @@ public class PlayListServiceImpl implements PlayListService {
 						}
 					});
 					if (englishSongs.size() > 10) {
-						System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 						englishPlayLists.add(playlist);
-						firebaseService.writeList("playlist/us/playlist-"+playlist.getId(), englishSongs);
+						if (!firebaseService.dataRefExists("playlist/us/playlist-"+playlist.getId())){							
+							firebaseService.writeList("playlist/us/playlist-"+playlist.getId(), englishSongs);
+						}
 					}
 				});
 			});

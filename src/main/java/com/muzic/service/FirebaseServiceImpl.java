@@ -23,7 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 @Service
-public class FirebaseServiceImpl implements FirebaseService {
+public class FirebaseServiceImpl<T> implements FirebaseService {
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -50,7 +50,8 @@ public class FirebaseServiceImpl implements FirebaseService {
 		databaseReference.updateChildren(updateMap);		
 	}
 	
-	private boolean dataRefExists(String dataPoint) {
+	@Override
+	public boolean dataRefExists(String dataPoint) {
 		Optional<List<Object>> results = readList(dataPoint, Object.class);
 		return results.isPresent();		
 	}
@@ -115,6 +116,45 @@ public class FirebaseServiceImpl implements FirebaseService {
 		return Optional.of(new HashMap<String, Object>());
 	}
 
+	@Override
+	public <T> Optional<T> read(String dataPoint, Class<T> t) {
+		try {
+			DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(dataPoint);
+			System.out.println(dataPoint);
+			System.out.println(databaseReference.getKey());
+			CountDownLatch lock = new CountDownLatch(1);
+			final List<T> results = Lists.newArrayList();
+			databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+				
+				@Override
+				public void onDataChange(DataSnapshot dataSnapshot) {
+					results.add(dataSnapshot.getValue(t));
+					lock.countDown();
+				}
+				
+				@Override
+				public void onCancelled(DatabaseError error) {
+					System.out.println(error);
+					lock.countDown();
+					
+				}
+			});
+
+
+			
+			lock.await();
+			
+			if (results.isEmpty()) {
+				return Optional.empty();
+			}
+			
+			return Optional.of(results.get(0));			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+	}
 	
 	@Override
 	public <T> Optional<List<T>> readList(String dataPoint, Class<T> t) {
@@ -157,6 +197,13 @@ public class FirebaseServiceImpl implements FirebaseService {
 		}
 		
 
+	}
+
+	@Override
+	public void write(String dataPoint, Map<String, Object> map) {
+		DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference(dataPoint);
+		databaseReference.setValue(map);
+		
 	}
 
 
