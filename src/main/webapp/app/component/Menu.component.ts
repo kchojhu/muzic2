@@ -111,18 +111,26 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                     let playlistPanel = $($('#playlist-' + appEvent.data.country + "-" + appEvent.data.playlist).find('a').attr('data-target'));
                     // this._menuApi.openPanel(playlistPanel);
                     playlistPanel.trigger('click');
-                    // let playlistSongsSelector = '#playlist-' + appEvent.data.country + '-' + appEvent.data.playlist;
-                    // $(playlistSongsSelector + ' a')[0].click();
+                    this._menuApi.closeAllPanels();
+                    setTimeout(()=> {
+                        $('#playlist-' + appEvent.data.country).find('a').trigger('click');
+                        setTimeout(()=>{
+                               let playlistSongsSelector = '#playlist-' + appEvent.data.country + '-' + appEvent.data.playlist;
+                            $(playlistSongsSelector + ' a')[0].click();
 
-                    // let checkExist = setInterval(() => {
-                    //     if ($($(playlistSongsSelector).find('a').attr('data-target')).find('li>a').length) {
-                    //         setTimeout(()=> {
-                    //             $($(playlistSongsSelector).find('a').attr('data-target')).find('li>a')[appEvent.data.songIndex].click();
-                    //         }, 3000);
+                    let checkExist = setInterval(() => {
+                        if ($($(playlistSongsSelector).find('a').attr('data-target')).find('li>a').length) {
+                            setTimeout(()=> {
+                                $($(playlistSongsSelector).find('a').attr('data-target')).find('li>a')[appEvent.data.songIndex].click();
+                            });
 
-                    //         clearInterval(checkExist);
-                    //     }
-                    // }, timeoutWait);
+                            clearInterval(checkExist);
+                        }
+                    }, timeoutWait);
+
+                        }, timeoutWait);
+
+                    }, timeoutWait);
                 }, timeoutWait);
             }, timeoutWait);
         }, timeoutWait);
@@ -235,6 +243,15 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         this._menuApi.bind('openingPanel', () => {
             this.initPlaylistMenu();
         });
+
+        this._menuApi.bind('open', () => {
+            if ($('#menu li.music-item.mm-selected').length > 0) {
+                if ($("#menu div.mm-current").attr('id') === $('#menu li.music-item.mm-selected').parent().parent().attr('id')){
+                    $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
+                } 
+            }
+        });
+
         this._menuApi.bind('setSelected', (selectedItem, previousItem) => {
 
             if (!previousItem || selectedItem === previousItem) {
@@ -250,7 +267,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
             } else {
                 dataRef = $(selectedItem).find('a').attr('href');
             }
-            $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
+
             this._applicationService.applicationEventEmitter.emit({ type: 'player', action: 'play', data: { youtubeId: youtubeId, dataRef: dataRef } });
 
 

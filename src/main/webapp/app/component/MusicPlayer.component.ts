@@ -40,6 +40,11 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         // if (command === 'repeat') {
         //     this.toggleRepeatColor = this.toggleRepeatColor === 'white' ? '#429a67' : 'white';
         // }
+
+        if (command === 'next' && this.randomSongMode) {
+            command = 'random';
+        }
+
         this._applicationService.applicationEventEmitter.emit({ type: "playlist", action: 'playNextSong', data: { command: command } });
     }
 
@@ -56,11 +61,9 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
                 if (!this._isPlayeReady) {
                     this._isPlayeReady = true;
-                    console.log('init song:' + this.currentSong.youtubeId);
                     this.initPlayer(this.currentSong.youtubeId);
 
                 } else {
-                    console.log('xxx song:' + this.currentSong.youtubeId);
                     this.player.loadVideoById(this.currentSong.youtubeId);
                 }
                 break;
@@ -73,7 +76,6 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         // $(window).on('hashchange', this.hashchange.bind(this));
         this._applicationService.applicationEventEmitter.subscribe(appEvent => {
             if (appEvent.type === 'player') {
-                console.log('app event', appEvent);
                 this.playerEventProcessor(appEvent);
             }
         });
@@ -222,6 +224,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
     onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
             console.log('playing');
+            $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
             this.currentMode = YT.PlayerState.PLAYING;
             location.hash = this.currentSong.dataRef;
             this.playPauseString = '&#xf04c;';
