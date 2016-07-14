@@ -245,11 +245,17 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         });
 
         this._menuApi.bind('open', () => {
+
             if ($('#menu li.music-item.mm-selected').length > 0) {
-                if ($("#menu div.mm-current").attr('id') === $('#menu li.music-item.mm-selected').parent().parent().attr('id')){
-                    $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
-                } 
+                if ($("#menu div.mm-current").attr('id') === $('#menu li.music-item.mm-selected').parent().parent().attr('id')) {
+                    setTimeout(()=>{
+                        if(!$('#menu li.music-item.mm-selected').visible()) {
+                            $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
+                        }                        
+                    }, 1000);
+                }
             }
+
         });
 
         this._menuApi.bind('setSelected', (selectedItem, previousItem) => {

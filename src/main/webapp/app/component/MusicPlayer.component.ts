@@ -129,7 +129,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
             });
         }
 
-        this.progressBar.css('top', height - this.progressBar.height());
+        this.progressBar.css('top', (height + 10) - this.progressBar.height());
         // this.progressBar.css('width', width);
 
 
@@ -152,11 +152,18 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         //      console.log(country, playlistId, songIndex);
         //  }
 
-        this.progressBar = $('#myProgress');
-        this.progressBar.on('click touchend', { thisObject: this }, function (e) {
-            console.log('here');
-            let newTime = e.data.thisObject.player.getDuration() * ((e.pageX - this.offsetLeft) / $(this).width());
+        this.progressBar = $('div.audioplayer');        
+        this.progressBar.find('div.audioplayer-bar').on('click touchend', { thisObject: this }, function (e) {
+            let bar = $('div.audioplayer-bar');
+            let newTime = e.data.thisObject.player.getDuration() * ((e.pageX - bar.offset().left) / bar.width());
             e.data.thisObject.player.seekTo(newTime);
+        });
+
+        this.progressBar.find('div.audioplayer-volume-adjust').on('mousemove touchmove touchend', { thisObject: this }, function (e) {
+            let volumeAdjuster = $('div.audioplayer-volume-adjust > div');
+            let newVolume = Math.abs( ( e.pageY - ( volumeAdjuster.offset().top + volumeAdjuster.height() ) ) / volumeAdjuster.height() ) * 100;
+            e.data.thisObject.player.setVolume(newVolume);
+            volumeAdjuster.find('div').css('height', newVolume + '%');
         });
 
     }
@@ -195,6 +202,9 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
                 'onError': this.onPlayerError.bind(this)
             }
         });
+        
+        
+
         this.playerEl = $("#player");
         // this.playerMenuEl = $('#playListMenu .component')[0];
         $(window).on('resize', () => this.resizeWindow());
@@ -217,11 +227,15 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
     moveProgressBar() {
         let playerTimeDifference = (this.player.getCurrentTime() / this.player.getDuration()) * 100;
-
-        this.progressBar.find('#myBar').css('width', playerTimeDifference + '%');
+        let currentTime = ('0' + (this.player.getCurrentTime()/60 << 0)).slice(-2) + ":" + ('0' + (this.player.getCurrentTime()%60 << 0)).slice(-2);
+        let durationTime = ('0' + (this.player.getDuration()/60 << 0)).slice(-2) + ":" + ('0' + (this.player.getDuration()%60 << 0)).slice(-2);
+        this.progressBar.find('div.audioplayer-bar-loaded').css('width', playerTimeDifference + '%');
+        this.progressBar.find('div.audioplayer-time-current').text(currentTime);
+        this.progressBar.find('div.audioplayer-time-duration').text(durationTime);                
     }
 
     onPlayerStateChange(event) {
+
         if (event.data === YT.PlayerState.PLAYING) {
             console.log('playing');
             $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
