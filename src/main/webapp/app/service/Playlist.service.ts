@@ -1,8 +1,8 @@
 import { Injectable, EventEmitter} from '@angular/core';
 import { Http, Response} from '@angular/http';
 import { Song, MusicItem, MusicRequest, Playlist  } from "../model/Models";
-import 'rxjs/Rx';
-import { Observable } from 'rxjs/Rx';
+import { Observable} from 'rxjs/Rx';
+import 'rxjs/add/operator/map';
 @Injectable()
 export class PlaylistService {
     songsEventEmitter: EventEmitter<string> = new EventEmitter<string>();

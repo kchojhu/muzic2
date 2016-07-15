@@ -3,7 +3,7 @@ var map = {
     'rxjs': 'vendor/rxjs',
     '@angular': 'vendor/@angular',
     'ng2-bootstrap': 'vendor/ng2-bootstrap',
-    'moment': 'vendor/moment/moment.js'
+    'moment': 'vendor/moment/moment.js'    
 };
 
 var packages = {

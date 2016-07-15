@@ -43,7 +43,7 @@ public class KpopServiceImpl implements MusicChartSerice {
 	private FirebaseService firebaseService;
 	
 	
-	@Scheduled(fixedRate = 3600000)
+	@Scheduled(fixedRate = 21600000, initialDelay=21600000)
 	@Override
 	public void refreshSongs() {
 		getSongs(false);

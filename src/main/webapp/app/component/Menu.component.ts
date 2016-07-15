@@ -41,6 +41,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         if (playlistElement.find("span:contains('Loading...')").length > 0) {
 
             this._playlistService.getSongsByDataRef(playlistRef).subscribe(songs => {
+                console.log('here123');
                 this.currentPlaylistSongs = songs;
                 songs.forEach((song, index) => {
                     playlistItems += "<li class='music-item' data-youtubeId='" + song.songId + "'><a href='#music-player/playlist/" + playlistRef + "/" + index + "/" + song.songId + "'>" + "<img class='thumb' src='" + song.image + "'><div class='title'>" + song.songName + '</div><div class="artist">' + song.artistName + '</div></a></li>\n';

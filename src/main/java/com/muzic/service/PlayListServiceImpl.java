@@ -48,7 +48,7 @@ public class PlayListServiceImpl implements PlayListService {
 	private String newPlayListCacheKey = "START_DATE";
 	private String topFavPlayListCacheKey = "CNT_LIKE";
 
-	@Scheduled(fixedRate = 3600000)
+	@Scheduled(fixedRate = 21600000, initialDelay=21600000)
 	public void refreshSongs() {
 		getPlaylists("START_DATE", false);
 	}

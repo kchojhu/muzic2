@@ -38,8 +38,10 @@ public class ItuneServiceImpl implements MusicChartSerice {
 	private FirebaseService firebaseService;
 
 
-	@Scheduled(fixedRate = 3600000)
+//	@Scheduled(fixedRate = 3600000)
+	@Scheduled(fixedRate = 21600000,initialDelay=21600000)
 	public void refreshSongsInterval() {
+//		System.out.println("refresh");
 		refreshSongs(false);
 	}
 	

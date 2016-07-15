@@ -1,7 +1,7 @@
 import { Injectable, EventEmitter} from '@angular/core';
 import { Http, Response} from '@angular/http';
-import 'rxjs/Rx';
 import { Observable } from 'rxjs/Rx';
+import 'rxjs/add/operator/map';
 import {Playlist} from '../model/Models';
 
 @Injectable()
