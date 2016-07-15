@@ -36,12 +36,11 @@ public class UsPoPServiceImpl implements MusicChartSerice {
 
 	private String cacheSongKey = "pop";
 
-	@Scheduled(fixedRate = 86400)
 	public void refreshSongs() {
 		cacheService.deleteCache(cacheSongKey);
 	}
 
-	@PostConstruct
+//	@PostConstruct
 	public void init() {
 		this.getSongs();
 	}

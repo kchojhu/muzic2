@@ -49,11 +49,13 @@ public class YoutubeServiceImpl implements YoutubeService {
 		return null;
 	}
 
-	@Scheduled(fixedRate = 3600000)
+	@Scheduled(fixedRate = 3600000, initialDelay = 360000)
 	public void refreshConfiguration() {
 		youtubeFilterKeywords.clear();
 		youtubeFilterKeywords.addAll(Sets.newHashSet(firebaseService.read("configuration/youtubeFilterKeyword",String.class).get().split(",")));
 	}
+	
+	
 	
 	public Set<String> getYoutubeFilterKeywords() {
 		if (youtubeFilterKeywords.isEmpty()) {

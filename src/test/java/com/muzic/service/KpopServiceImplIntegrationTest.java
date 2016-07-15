@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.google.api.client.util.Maps;
 import com.google.common.collect.Lists;
@@ -20,8 +21,7 @@ public class KpopServiceImplIntegrationTest extends Muzic2ApplicationTests{
 
 	@Autowired
 	private KpopServiceImpl kpopService;
-
-
+	
 	
 	@Test
 	public void getSongs() throws Exception{

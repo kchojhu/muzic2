@@ -54,7 +54,7 @@ public class MellonArtistServiceImpl implements MusicChartSerice {
 	// cacheService.deleteCache("Dance");
 	// }
 
-	@PostConstruct
+//	@PostConstruct
 	public void init() {
 		this.getSongs();
 		try {

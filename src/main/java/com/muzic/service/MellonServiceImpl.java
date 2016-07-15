@@ -35,12 +35,12 @@ public class MellonServiceImpl implements MusicChartSerice {
 	@Autowired
 	private CacheService cacheService;
 
-	@Scheduled(fixedRate = 60000)
+//	@Scheduled(fixedRate = 60000)
 	public void refreshSongs() {
 		cacheService.deleteCache("Dance");
 	}
 	
-	@PostConstruct
+//	@PostConstruct
 	public void init() {
 		this.getSongs();
 	}

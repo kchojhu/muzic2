@@ -32,10 +32,13 @@ public class FirebaseServiceImpl<T> implements FirebaseService {
 	@Value("${firebase.url}")
 	private String firebaseUrl;
 
+	@Value("${firebase.keyFileName}")
+	private String firebaseKeyFileName;
+	
 	@PostConstruct
 	public void init() {
 		FirebaseOptions options = new FirebaseOptions.Builder()
-				.setServiceAccount(this.getClass().getResourceAsStream("/google-services.json"))
+				.setServiceAccount(this.getClass().getResourceAsStream("/" + firebaseKeyFileName))
 				.setDatabaseUrl(firebaseUrl).build();
 		FirebaseApp.initializeApp(options);
 	}
