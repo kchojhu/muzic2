@@ -2,6 +2,7 @@ package com.muzic.service;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.google.api.client.util.Maps;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -35,36 +37,47 @@ public class YoutubeServiceImpl implements YoutubeService {
 
 	@Value("${youtube.filter.duration}")
 	private Integer musicDuration;
-	
+
 	@Autowired
 	private FirebaseService firebaseService;
-	
+
 	@Autowired
 	private YouTube youtube;
-	
+
 	private Set<String> youtubeFilterKeywords = Sets.newHashSet();
-	
+	final String invalidYoutubeIdsRef = "configuration/invalidYoutubeIds";
+	private List<String> invalidYoutubeIdsList = Lists.newArrayList();
+
 	public Song changeSong(String playlistId, Song song) {
-		
+
 		return null;
+	}
+
+	public List<String> getInvalidYoutubeIds() {
+		if (invalidYoutubeIdsList.size() == 0) {
+			firebaseService.readList(invalidYoutubeIdsRef, String.class).ifPresent(v -> {
+				invalidYoutubeIdsList = v;
+			});
+		}
+
+		return invalidYoutubeIdsList;
 	}
 
 	@Scheduled(fixedRate = 3600000, initialDelay = 360000)
 	public void refreshConfiguration() {
 		youtubeFilterKeywords.clear();
-		youtubeFilterKeywords.addAll(Sets.newHashSet(firebaseService.read("configuration/youtubeFilterKeyword",String.class).get().split(",")));
+		youtubeFilterKeywords.addAll(Sets
+				.newHashSet(firebaseService.read("configuration/youtubeFilterKeyword", String.class).get().split(",")));
 	}
-	
-	
-	
+
 	public Set<String> getYoutubeFilterKeywords() {
 		if (youtubeFilterKeywords.isEmpty()) {
 			refreshConfiguration();
 		}
-		
+
 		return youtubeFilterKeywords;
 	}
-	
+
 	private static void prettyPrint(Iterator<SearchResult> iteratorSearchResults, String query) {
 
 		System.out.println("\n=============================================================");
@@ -109,15 +122,16 @@ public class YoutubeServiceImpl implements YoutubeService {
 	@Override
 	public Song getSong(Song song) {
 		try {
-			String songName = song.getSongName().replaceAll("\\([^\\(]*\\)", "").replaceAll("'", "").replaceAll("`", "").trim();
-			String artistName = song.getArtistName().replaceAll("\\([^\\(]*\\)", "").replaceAll("'", "").replaceAll("`", "").trim();
+			String songName = song.getSongName().replaceAll("\\([^\\(]*\\)", "").replaceAll("'", "").replaceAll("`", "")
+					.trim();
+			String artistName = song.getArtistName().replaceAll("\\([^\\(]*\\)", "").replaceAll("'", "")
+					.replaceAll("`", "").trim();
 			YouTube.Search.List search = youtube.search().list("id,snippet");
 			search.setKey(apiKey);
-			search.setQ(
-					StringUtils.join(Lists.newArrayList(songName, artistName, musicKeywords), " "));
+			search.setQ(StringUtils.join(Lists.newArrayList(songName, artistName, musicKeywords), " "));
 			// search.set
 			search.setType("video");
-			//https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBdH1-L-TTl2Xf_oZGJIyIr6C2PzdY1GiU
+			// https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=AIzaSyBdH1-L-TTl2Xf_oZGJIyIr6C2PzdY1GiU
 			search.setVideoCategoryId("10");
 			search.setFields("items(id/kind,id/videoId,snippet/title,snippet/thumbnails/default/url)");
 			search.setMaxResults(10l);
@@ -125,7 +139,7 @@ public class YoutubeServiceImpl implements YoutubeService {
 
 			List<SearchResult> searchResultList = searchResponse.getItems();
 
-			if (searchResultList != null) {				
+			if (searchResultList != null) {
 				for (SearchResult searchResult : searchResultList) {
 					String title = searchResult.getSnippet().getTitle().replaceAll("'", "").replaceAll("`", "");
 					boolean filter = false;
@@ -138,33 +152,53 @@ public class YoutubeServiceImpl implements YoutubeService {
 					if (filter || !title.toLowerCase().contains(songName.toLowerCase())) {
 						continue;
 					}
-					
-					ResourceId rId = searchResult.getId();				
-					YouTube.Videos.List listVideosRequest = youtube.videos().list("snippet, contentDetails").setId(rId.getVideoId());
+
+					ResourceId rId = searchResult.getId();
+
+					if (getInvalidYoutubeIds().contains(rId.getVideoId())) {
+						continue;
+					}
+
+					YouTube.Videos.List listVideosRequest = youtube.videos().list("snippet, contentDetails")
+							.setId(rId.getVideoId());
 					listVideosRequest.setKey(apiKey);
 					VideoListResponse listResponse = listVideosRequest.execute();
-					
+
 					PeriodFormatter formatter = ISOPeriodFormat.standard();
 					Period p = formatter.parsePeriod(listResponse.getItems().get(0).getContentDetails().getDuration());
 					Seconds s = p.toStandardSeconds();
 					Thumbnail thumbnail = (Thumbnail) searchResult.getSnippet().getThumbnails().get("default");
-					
+
 					if (s.getSeconds() < musicDuration & s.getSeconds() > 120 && s.getSeconds() < 600000) {
 						song.setSongId(rId.getVideoId());
 						song.setImage(thumbnail.getUrl());
 						song.setDuration(s.getSeconds());
 						return song;
 					}
-					
+
 				}
 			}
-			
 
 			return song;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+
+	@Override
+	public Song replaceSong(Song song) {
+		String replaceYoutubeId = song.getSongId();
+		if (!getInvalidYoutubeIds().contains(song.getSongId())) {
+			firebaseService.push(invalidYoutubeIdsRef, song.getSongId());
+			invalidYoutubeIdsList.clear();;
+		}
+		Song replaceSong = getSong(song);
+		if (replaceSong.getSongId().equals(replaceYoutubeId)) {
+			return null;
+		}
+		
+		return getSong(song);
 	}
 
 }

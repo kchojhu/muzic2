@@ -10,21 +10,39 @@
             </ul>
         </li>
         <template ngFor let-country [ngForOf]="countries">
-            <li id="playlist-{{country.countryCode}}" [style.display]="country.checked ? 'block': 'none'" >
-                <span>{{country.country}} Playlist</span>
+            <li id="country-{{country.countryCode}}" [style.display]="country.checked ? 'block': 'none'">
+                <span>{{country.country}}</span>
                 <ul>
-                    <li id="playlist-{{country.countryCode}}-top" (click)="showPlayListSongs(country.countryCode + '/top', $event)"><span >Top 100</span>
+                    <li id="playlist-{{country.countryCode}}">
+                        <span>Playlist</span>
                         <ul>
-                            <li>
-                                <span >Loading...</span>
+                            <li id="playlist-{{country.countryCode}}-top" (click)="showPlayListSongs('playlist/' + country.countryCode + '/top', $event)"><span>Top 100</span>
+                                <ul>
+                                    <li>
+                                        <span>Loading...</span>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li id="playlist-{{country.countryCode}}-{{playlist.id}}" *ngFor="let playlist of country.playlists" (click)="showPlayListSongs('playlist/' + country.countryCode + '/playlist-' + playlist.id, $event)"><span>{{playlist.name}}</span>
+                                <ul>
+                                    <li>
+                                        <span>Loading...</span>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </li>
-
-                    <li id="playlist-{{country.countryCode}}-{{playlist.id}}" *ngFor="let playlist of country.playlists" (click)="showPlayListSongs(country.countryCode + '/playlist-' + playlist.id, $event)"><span>{{playlist.name}}</span>
+                    <li id="genre-{{country.countryCode}}">
+                        <span>Genre</span>
                         <ul>
-                            <li>
-                                <span>Loading...</span>
+                            <li *ngFor="let genre of country.genres" (click)="showPlayListSongs('genre/' + country.countryCode + '/' + genre.replace(' ', '').replace(' ', ''), $event)">
+                                <span>{{genre}}</span>
+                                <ul>
+                                    <li>
+                                        <span>Loading...</span>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </li>

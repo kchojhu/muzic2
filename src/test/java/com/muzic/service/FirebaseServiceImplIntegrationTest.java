@@ -22,6 +22,18 @@ public class FirebaseServiceImplIntegrationTest extends Muzic2ApplicationTests {
 	private FirebaseServiceImpl firebaseService;
 
 	@Test
+	public void push() throws Exception {
+		firebaseService.push("configuration/invalidYoutubeIds", "test1");
+	}
+	
+	@Test
+	public void findDataRefWith() throws Exception {
+		Map<String, Object> searchMap = Maps.newHashMap();
+		searchMap.put("songId", "pjdhqCZQGlQ");
+		System.out.println(firebaseService.findDataRefWith("playlist/kr/playlist-420649466", searchMap));
+	}
+	
+	@Test
 	public void readList() throws Exception {
 		Optional<List<Song>> results = firebaseService.readList("playlist/korean/top-20160703", Song.class);
 		if (!results.isPresent()) {

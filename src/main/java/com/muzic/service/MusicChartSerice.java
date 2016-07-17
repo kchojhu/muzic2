@@ -22,5 +22,10 @@ public interface MusicChartSerice {
 	default void refreshSongsInterval() {
 		
 	}
+
+	default Songs getGenre(String type, Boolean useCache) {
+		return null;
+	}
+
 	
 }

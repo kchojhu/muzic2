@@ -1,6 +1,5 @@
 package com.muzic.service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -20,5 +19,11 @@ public interface FirebaseService {
 	void write(String dataPoint, Map<String, Object> map);
 
 	<T>Optional<T> read(String dataPoint, Class<T> t);
+
+	void push(String dataPoint, Object data);
+
+	Optional<String> findDataRefWith(String dataRef, Map<String, Object> searchMap);
+
+	void update(String dataref, Map<String, Object> updateMap);
 
 }

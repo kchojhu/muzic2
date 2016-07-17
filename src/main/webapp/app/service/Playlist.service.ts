@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter} from '@angular/core';
-import { Http, Response} from '@angular/http';
+import { Http, Response, URLSearchParams, RequestOptions} from '@angular/http';
 import { Song, MusicItem, MusicRequest, Playlist  } from "../model/Models";
 import { Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
@@ -14,7 +14,7 @@ export class PlaylistService {
     }
 
     getSongsByDataRef(dataRef: string): Observable<Song[]> {
-        return this._http.get('/chart/playlist-songs?dataRef=playlist/' + dataRef).map((response: Response) => {
+        return this._http.get('/chart/playlist-songs?dataRef=' + dataRef).map((response: Response) => {
             // let songs:Array<Song> = new Array<Song>();
             // let responseJson = response.json(); 
             // _.each(_.keys(responseJson), (songKey) => {
@@ -23,6 +23,21 @@ export class PlaylistService {
 
             // return songs;
             return <Song[]>response.json();
+        });
+    }
+
+    replaceSong(title: string, artist: string, dataRef: string) {
+        var params = new URLSearchParams();
+        params.set('title', title);
+        params.set('artist', artist);
+        params.set('dataRef', dataRef);
+        return this._http.get('/chart/replaceSong', new RequestOptions({ search: params })).map((response: Response) => {
+            if (response.text().length) {
+                
+                return <Song>response.json();
+            } else {
+                throw (new Error("No Song Found"));
+            }
         });
     }
 

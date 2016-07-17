@@ -21,7 +21,7 @@ gulp.task('build-ts', function () {
         .pipe(gulp.dest(dist + 'app'));
 });
 
-gulp.task('browserSync', function() {
+gulp.task('browserSync', ['watch'], function() {
 	var options = {
 			proxy: 'localhost:8080',
 			port: 4000,
@@ -43,13 +43,13 @@ gulp.task('browserSync', function() {
 //		browserSync.reload({stream:false});
 //	});
 
-	gulp.watch(['src/main/webapp/dist/index.html', 'src/main/webapp/dist/app/**/*.js'], function() {
-		browserSync.reload({stream:false});
+	return gulp.watch(['src/main/webapp/dist/index.html', 'src/main/webapp/dist/app/**/*.js'], function() {
+		return browserSync.reload({stream:false});
 	});
 
 });
 
-gulp.task('build-copy', function () {
+gulp.task('build-copy', ['build-ts'], function () {
     gulp.src([src + 'app/**/*.html', src + 'app/**/*.htm', src + 'app/**/*.css'])
         .pipe(gulp.dest(dist + 'app'));
 
@@ -66,14 +66,13 @@ gulp.task('build-copy-css', function () {
 });
 
 gulp.task('clean', function() {
-   del([dist + '/**/*.html', dist + '/**/*.htm', dist + '/**/*.css'], dist + 'app');
+    return del([dist + '/**/*.html', dist + '/**/*.htm', dist + '/**/*.css'], dist + 'app');
 });
 
-gulp.task('vendor', function() {
-    del([dist + '/vendor/**/*']);
-
-    gulp.src(['node_modules/@angular/**'])
-        .pipe(gulp.dest(dist + 'vendor/@angular'));
+gulp.task('vendor', ['clean'], function() {
+    del.sync([dist + '/vendor/**/*'], {force: true});
+    gulp.src('node_modules/@angular/**')
+        .pipe(gulp.dest(dist + 'vendor/@angular/'));
 
     //ES6 Shim
     gulp.src('node_modules/es6-shim/**')
@@ -93,19 +92,19 @@ gulp.task('vendor', function() {
     
     // ng2-bootstrap
     gulp.src('node_modules/lockr/**')
-        .pipe(gulp.dest(dist + '/vendor/lockr/lockr.min.js'));
+        .pipe(gulp.dest(dist + '/vendor/lockr/'));
 
     //zonejs
     return gulp.src('node_modules/zone.js/**')
         .pipe(gulp.dest(dist + '/vendor/zone.js/'));
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['build'], function() {
    gulp.watch(src + '**/*.ts', ['build-ts']);
    gulp.watch([src + '**/*.{html,htm}', '!' + dist],  ['build-copy']);
-   gulp.watch([src + '**/*.css', '!' + dist],  ['build-copy-css']);
+   return gulp.watch([src + '**/*.css', '!' + dist],  ['build-copy-css']);
 });
 
 gulp.task('build', ['build-ts', 'build-copy']);
 gulp.task('default', ['build', 'watch']);
-gulp.task('serve', ['clean', 'vendor', 'build', 'watch', 'browserSync']);
+gulp.task('serve', ['build', 'watch', 'browserSync'], function(){});

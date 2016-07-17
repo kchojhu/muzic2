@@ -170,6 +170,8 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
     onPlayerError(error) {
         console.log(error);
+        // let currentYoutubeId = error.target.getVideoData();
+        this._applicationService.applicationEventEmitter.emit({ type: "playlist", action: 'invalidSong', data: { youtubeId: error.target.getVideoData() } });
     }
 
     initPlayer(videoId: string) {

@@ -5,5 +5,7 @@ import com.muzic.model.Song;
 public interface YoutubeService {
 
 	Song getSong(Song song);
+
+	Song replaceSong(Song song);
 	
 }

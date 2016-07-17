@@ -34,14 +34,12 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         this._playListUpdated = true;
     }
 
-
     showPlayListSongs(playlistRef: string, event: Event) {
         let playlistElement: JQuery = $($(event.target).attr('data-target'));
         let playlistItems: string = '';
         if (playlistElement.find("span:contains('Loading...')").length > 0) {
 
             this._playlistService.getSongsByDataRef(playlistRef).subscribe(songs => {
-                console.log('here123');
                 this.currentPlaylistSongs = songs;
                 songs.forEach((song, index) => {
                     playlistItems += "<li class='music-item' data-youtubeId='" + song.songId + "'><a href='#music-player/playlist/" + playlistRef + "/" + index + "/" + song.songId + "'>" + "<img class='thumb' src='" + song.image + "'><div class='title'>" + song.songName + '</div><div class="artist">' + song.artistName + '</div></a></li>\n';
@@ -59,7 +57,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         let currentlyOpenedPanel: JQuery = this._menu.find("div.mm-panel.mm-current");
         if (currentlyOpenedPanel.length > 0) {
             if (currentlyOpenedPanel.find("span:contains('Loading...')").length > 0) {
- this._menuApi.init(currentlyOpenedPanel);
+                this._menuApi.init(currentlyOpenedPanel);
             }
         }
 
@@ -113,28 +111,41 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                     // this._menuApi.openPanel(playlistPanel);
                     playlistPanel.trigger('click');
                     this._menuApi.closeAllPanels();
-                    setTimeout(()=> {
-                        $('#playlist-' + appEvent.data.country).find('a').trigger('click');
-                        setTimeout(()=>{
-                               let playlistSongsSelector = '#playlist-' + appEvent.data.country + '-' + appEvent.data.playlist;
-                            $(playlistSongsSelector + ' a')[0].click();
+                    setTimeout(() => {
+                        $('#country-' + appEvent.data.country).find('a').trigger('click');
+                        setTimeout(() => {
+                            $('#playlist-' + appEvent.data.country).find('a').trigger('click');
+                            setTimeout(() => {
+                                let playlistSongsSelector = '#playlist-' + appEvent.data.country + '-' + appEvent.data.playlist;
+                                $(playlistSongsSelector + ' a')[0].click();
 
-                    let checkExist = setInterval(() => {
-                        if ($($(playlistSongsSelector).find('a').attr('data-target')).find('li>a').length) {
-                            setTimeout(()=> {
-                                $($(playlistSongsSelector).find('a').attr('data-target')).find('li>a')[appEvent.data.songIndex].click();
-                            });
+                                let checkExist = setInterval(() => {
+                                    if ($($(playlistSongsSelector).find('a').attr('data-target')).find('li>a').length) {
+                                        setTimeout(() => {
+                                            $($(playlistSongsSelector).find('a').attr('data-target')).find('li>a')[appEvent.data.songIndex].click();
+                                        });
 
-                            clearInterval(checkExist);
-                        }
-                    }, timeoutWait);
-
+                                        clearInterval(checkExist);
+                                    }
+                                }, timeoutWait);
+                            }, timeoutWait);
                         }, timeoutWait);
-
                     }, timeoutWait);
                 }, timeoutWait);
             }, timeoutWait);
         }, timeoutWait);
+    }
+
+    replaceSong(event:AppEvent) {
+        let currentSong = this._menu.find('li.music-item.mm-selected');
+        let title = currentSong.find('div.title').text();
+        let artist = currentSong.find('div.artist').text();
+        let dataRef = currentSong.find('a').attr('href').split('/').slice(2).join('/');
+        this._playlistService.replaceSong(title, artist, dataRef).subscribe(song => {
+            this._applicationService.applicationEventEmitter.emit({ type: 'player', action: 'play', data: { youtubeId: song.songId, dataRef: dataRef } });
+        }, (error)=> {
+            this.selectNextSong({action:"", type: "", data:{command:'next'}});
+        });
     }
 
     selectNextSong(event: AppEvent) {
@@ -193,6 +204,9 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                     case 'playPrevSong':
                         this.selectNextSong(event);
                         break;
+                    case 'invalidSong':
+                        this.replaceSong(event);
+                        break;
                 }
 
             }
@@ -214,6 +228,15 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                 this._menuService.getPlaylist(country.countryCode).subscribe(playlists => {
                     country.playlists = playlists;
                 });
+
+                if (menu.genre[country.country]) {
+                    country.genres = new Array<string>();
+                    _.each(_.keys(menu.genre[country.country]), (key) => {
+                        let genre = menu.genre[country.country][key];
+                        console.log('genre', genre.name);
+                        country.genres.push(genre.name);
+                    });
+                }
 
                 this.countries.push(country);
 
@@ -249,10 +272,10 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
 
             if ($('#menu li.music-item.mm-selected').length > 0) {
                 if ($("#menu div.mm-current").attr('id') === $('#menu li.music-item.mm-selected').parent().parent().attr('id')) {
-                    setTimeout(()=>{
-                        if(!$('#menu li.music-item.mm-selected').visible()) {
+                    setTimeout(() => {
+                        if (!$('#menu li.music-item.mm-selected').visible()) {
                             $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
-                        }                        
+                        }
                     }, 1000);
                 }
             }
