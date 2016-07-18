@@ -142,6 +142,21 @@ public class MusicChartController {
 		}
 		return null;
 	}
+	
+	@RequestMapping("/artistSongs")
+	public Songs getArtistSongs(@RequestParam String country, @RequestParam String artistId) {
+		// if (NumberUtils.isNumber(country)) {
+		// return mellonArtistService.getSongs(country);
+		// }
+
+		switch (country) {
+		case "kr":
+			return kPopService.getArtistSongs(artistId, true);
+		// case "America":
+		// return usPopService.getSongs();
+		}
+		return null;
+	}
 
 	@RequestMapping("/ituneTop100")
 	public Songs ituneTop100(@RequestParam String country) {

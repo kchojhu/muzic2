@@ -31,11 +31,15 @@ public class KpopServiceImpl implements MusicChartSerice {
 
 	private String playlistKey = "playlist/kr/top";
 	private String genrelistKey = "genre/kr/";
+	private String artistlistKey = "artists/kr/";
 	@Value("${kpop.urls}")
 	private String[] kpopUrls;
 
 	@Value("${korean.genre.url}")
 	private String[] koreanGenreUrls;
+
+	@Value("${korean.artist.url}")
+	private String koreanArtistUrl;
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -53,37 +57,93 @@ public class KpopServiceImpl implements MusicChartSerice {
 		private String chartType;
 		private String key;
 		private String name;
+
 		public String getCdType() {
 			return cdType;
 		}
+
 		public void setCdType(String cdType) {
 			this.cdType = cdType;
 		}
+
 		public String getChartType() {
 			return chartType;
 		}
+
 		public void setChartType(String chartType) {
 			this.chartType = chartType;
 		}
+
 		public String getKey() {
 			return key;
 		}
+
 		public void setKey(String key) {
 			this.key = key;
 		}
+
 		public String getName() {
 			return name;
 		}
+
 		public void setName(String name) {
 			this.name = name;
 		}
 	}
-	
+
+	@Override
+	public Songs getArtistSongs(String artistId, Boolean useCache) {
+		Songs songs = new Songs();
+
+		String artistKey = artistlistKey + artistId;
+
+		Optional<List<Song>> results = firebaseService.readList(artistKey, Song.class);
+		if (results.isPresent() && useCache) {
+			songs.getSongs().addAll(results.get());
+			return songs;
+		}
+		
+		List<Map<String, Object>> songsList = Lists.newArrayList();
+		for (String kpopUrl : koreanGenreUrls) {
+			UriComponentsBuilder builder = UriComponentsBuilder
+					.fromHttpUrl(koreanArtistUrl.replaceAll("fn1ArtistId", artistId));
+			UriComponents components = builder.build(true);
+
+			Map<String, Object> result = restTemplate.getForObject(components.toUri(), Map.class);
+			if (result.containsKey("results")) {
+				songsList.addAll((List<Map<String, Object>>) result.get("results"));
+			}
+		}
+
+		songsList.forEach(s -> {
+
+			Song song = new Song();
+			try {
+				song.setArtistName(s.get("artist/_text").toString().split(Pattern.quote("("))[0].trim());
+			} catch (Exception e) {
+				song.setArtistName("");
+			}
+			song.setSongName(s.get("title/_text").toString().split(Pattern.quote("("))[0].trim());
+			if (!songs.getSongs().contains(song)) {				
+				songs.getSongs().add(song);
+			}
+
+		});
+		songs.getSongs().parallelStream().forEach(song -> {
+			youtubeService.getSong(song);
+		});
+
+		songs.setSongs(songs.getSongs().stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
+		firebaseService.writeList(artistKey, songs.getSongs(), false);
+		return songs;
+
+	}
+
 	@Scheduled(fixedRate = 21600000, initialDelay = 21600000)
 	@Override
 	public void refreshSongs() {
 		getSongs(false);
-		getGenreConfigruation().stream().forEach(genre-> {
+		getGenreConfigruation().stream().forEach(genre -> {
 			getGenre(genre.getName(), false);
 		});
 	}
@@ -97,22 +157,24 @@ public class KpopServiceImpl implements MusicChartSerice {
 
 	@Override
 	public Songs getGenre(String type, Boolean useCache) {
-		
+
 		Genre genre = getGenreConfigruation().stream().filter(v -> {
 			return v.getName().equalsIgnoreCase(type);
 		}).findFirst().get();
 		String genreKey = genrelistKey + genre.getName().replaceAll(" ", "");
 
-		Optional<List<Song>> results = firebaseService.readList(genreKey, Song.class);		
+		Optional<List<Song>> results = firebaseService.readList(genreKey, Song.class);
 		Songs songs = new Songs();
 		if (results.isPresent() && useCache) {
 			songs.getSongs().addAll(results.get());
 			return songs;
 		}
-		
+
 		List<Map<String, Object>> songsList = Lists.newArrayList();
 		for (String kpopUrl : koreanGenreUrls) {
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(kpopUrl.replaceAll("chartType", genre.getChartType()).replaceAll("cdType", genre.getCdType()).replaceAll("genreCode", genre.getKey()));
+			UriComponentsBuilder builder = UriComponentsBuilder
+					.fromHttpUrl(kpopUrl.replaceAll("chartType", genre.getChartType())
+							.replaceAll("cdType", genre.getCdType()).replaceAll("genreCode", genre.getKey()));
 			UriComponents components = builder.build(true);
 
 			Map<String, Object> result = restTemplate.getForObject(components.toUri(), Map.class);
@@ -133,13 +195,15 @@ public class KpopServiceImpl implements MusicChartSerice {
 			if (rank != null) {
 				Song song = new Song();
 				song.setRank(rank);
-				try {					
+				try {
 					song.setArtistName(s.get("artist/_text").toString().split(Pattern.quote("("))[0].trim());
 				} catch (Exception e) {
 					song.setArtistName("");
 				}
 				song.setSongName(s.get("title/_text").toString().split(Pattern.quote("("))[0].trim());
-				songs.getSongs().add(song);
+				if (!songs.getSongs().contains(song)) {				
+					songs.getSongs().add(song);
+				}
 			}
 
 		});

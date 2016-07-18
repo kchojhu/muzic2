@@ -23,11 +23,10 @@ export class AppComponent implements AfterViewInit {
         // #music-player/playlist/us/top/0
         let hash = location.hash.slice(1);
         let hashValues = hash.split("/");
-        console.log(hashValues);
-        if (hashValues && hashValues.length >0 && hashValues[0] ==='music-player') {
-            // this.focusComponent(this.getAppElement(hash));
-            this._applicationService.applicationEventEmitter.emit({ type: 'playlist', action : 'openPlaylist', data: { country: hashValues[2], playlist: hashValues[3], songIndex: hashValues[4]} });
-        }
+        // if (hashValues && hashValues.length >0 && hashValues[0] ==='music-player') {
+        //     // this.focusComponent(this.getAppElement(hash));
+        //     this._applicationService.applicationEventEmitter.emit({ type: 'playlist', action : 'openPlaylist', data: { country: hashValues[2], playlist: hashValues[3], songIndex: hashValues[4]} });
+        // }
 
 
     }

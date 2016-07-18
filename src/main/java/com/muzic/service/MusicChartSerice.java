@@ -27,5 +27,9 @@ public interface MusicChartSerice {
 		return null;
 	}
 
+	default Songs getArtistSongs(String artistId, Boolean useCache) {
+		return null;
+	}
+
 	
 }

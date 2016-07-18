@@ -169,7 +169,7 @@ public class YoutubeServiceImpl implements YoutubeService {
 					Seconds s = p.toStandardSeconds();
 					Thumbnail thumbnail = (Thumbnail) searchResult.getSnippet().getThumbnails().get("default");
 
-					if (s.getSeconds() < musicDuration & s.getSeconds() > 120 && s.getSeconds() < 600000) {
+					if (s.getSeconds() < musicDuration && s.getSeconds() > 120 ) {
 						song.setSongId(rId.getVideoId());
 						song.setImage(thumbnail.getUrl());
 						song.setDuration(s.getSeconds());

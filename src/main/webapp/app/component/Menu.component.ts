@@ -1,7 +1,7 @@
 import { Component, ComponentRef, AfterViewInit, OnInit, AfterViewChecked, ViewChild, ViewContainerRef, DoCheck, AfterContentChecked, DynamicComponentLoader, Injector } from '@angular/core';
 import { HTTP_PROVIDERS} from '@angular/http';
 import { MenuService, StorageService, ApplicationService, PlaylistService} from '../service/Services'
-import { Country, Playlist, AppEvent, Song} from '../model/Models';
+import { Country, Playlist, AppEvent, Song, Artist} from '../model/Models';
 import {ApplicationUtil} from '../app.util';
 import { SongItemComponent} from './Components';
 @Component({
@@ -42,7 +42,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
             this._playlistService.getSongsByDataRef(playlistRef).subscribe(songs => {
                 this.currentPlaylistSongs = songs;
                 songs.forEach((song, index) => {
-                    playlistItems += "<li class='music-item' data-youtubeId='" + song.songId + "'><a href='#music-player/playlist/" + playlistRef + "/" + index + "/" + song.songId + "'>" + "<img class='thumb' src='" + song.image + "'><div class='title'>" + song.songName + '</div><div class="artist">' + song.artistName + '</div></a></li>\n';
+                    playlistItems += "<li class='music-item' data-youtubeId='" + song.songId + "'><a href='#music-player/" + playlistRef + "/" + index + "/" + song.songId + "'>" + "<img class='thumb' src='" + song.image + "'><div class='title'>" + song.songName + '</div><div class="artist">' + song.artistName + '</div></a></li>\n';
                 });
 
                 playlistElement.find('li').replaceWith(playlistItems);
@@ -168,6 +168,9 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                     selectedMusic.parent().find('li.music-item').last().find('a').trigger('click');
                 }
                 break;
+            case 'replaceSong':
+                this.replaceSong();
+            break;
             case 'loop':
                 this._menu.find('li.music-item.mm-selected').find('a').trigger('click');
                 break;
@@ -235,6 +238,15 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                         let genre = menu.genre[country.country][key];
                         console.log('genre', genre.name);
                         country.genres.push(genre.name);
+                    });
+                }
+
+                if (menu.artists[country.countryCode]) {
+                    country.artists = new Array<Artist>();
+                    _.each(_.keys(menu.artists[country.countryCode]), (key) => {
+                        let artistMap: any = menu.artists[country.countryCode][key];
+                        let artist:Artist = {name: artistMap.name, id:artistMap.id, country: country.countryCode};
+                        country.artists.push(artistMap);
                     });
                 }
 

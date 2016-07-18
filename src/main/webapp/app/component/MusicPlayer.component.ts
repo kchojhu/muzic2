@@ -23,6 +23,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
     private progressBarInterval: any;
     private loopSongMode: boolean = false;
     private randomSongMode: boolean = false;
+    private isAdmin: boolean = false;
 
     constructor(private _storageService: StorageService, private _menuService: MenuService, private _applicationService: ApplicationService) {
 
@@ -62,9 +63,10 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
                 if (!this._isPlayeReady) {
                     this._isPlayeReady = true;
                     this.initPlayer(this.currentSong.youtubeId);
-
                 } else {
-                    this.player.loadVideoById(this.currentSong.youtubeId);
+                    // this.player.stopVideo();
+                    this.player.loadVideoById(this.currentSong.youtubeId, 0);
+                    // this.player.seekTo(0);
                 }
                 break;
         }
@@ -74,6 +76,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
     ngOnInit() {
         // $(window).on('hashchange', this.hashchange.bind(this));
+        this.isAdmin = this._storageService.isAdmin();
         this._applicationService.applicationEventEmitter.subscribe(appEvent => {
             if (appEvent.type === 'player') {
                 this.playerEventProcessor(appEvent);
@@ -152,7 +155,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
         //      console.log(country, playlistId, songIndex);
         //  }
 
-        this.progressBar = $('div.audioplayer');        
+        this.progressBar = $('div.audioplayer');
         this.progressBar.find('div.audioplayer-bar').on('click touchend', { thisObject: this }, function (e) {
             let bar = $('div.audioplayer-bar');
             let newTime = e.data.thisObject.player.getDuration() * ((e.pageX - bar.offset().left) / bar.width());
@@ -161,7 +164,7 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
         this.progressBar.find('div.audioplayer-volume-adjust').on('mousemove touchmove touchend', { thisObject: this }, function (e) {
             let volumeAdjuster = $('div.audioplayer-volume-adjust > div');
-            let newVolume = Math.abs( ( e.pageY - ( volumeAdjuster.offset().top + volumeAdjuster.height() ) ) / volumeAdjuster.height() ) * 100;
+            let newVolume = Math.abs((e.pageY - (volumeAdjuster.offset().top + volumeAdjuster.height())) / volumeAdjuster.height()) * 100;
             e.data.thisObject.player.setVolume(newVolume);
             volumeAdjuster.find('div').css('height', newVolume + '%');
         });
@@ -204,8 +207,8 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
                 'onError': this.onPlayerError.bind(this)
             }
         });
-        
-        
+
+
 
         this.playerEl = $("#player");
         // this.playerMenuEl = $('#playListMenu .component')[0];
@@ -229,16 +232,22 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
     moveProgressBar() {
         let playerTimeDifference = (this.player.getCurrentTime() / this.player.getDuration()) * 100;
-        let currentTime = ('0' + (this.player.getCurrentTime()/60 << 0)).slice(-2) + ":" + ('0' + (this.player.getCurrentTime()%60 << 0)).slice(-2);
-        let durationTime = ('0' + (this.player.getDuration()/60 << 0)).slice(-2) + ":" + ('0' + (this.player.getDuration()%60 << 0)).slice(-2);
+        let currentTime = ('0' + (this.player.getCurrentTime() / 60 << 0)).slice(-2) + ":" + ('0' + (this.player.getCurrentTime() % 60 << 0)).slice(-2);
+        let durationTime = ('0' + (this.player.getDuration() / 60 << 0)).slice(-2) + ":" + ('0' + (this.player.getDuration() % 60 << 0)).slice(-2);
         this.progressBar.find('div.audioplayer-bar-loaded').css('width', playerTimeDifference + '%');
         this.progressBar.find('div.audioplayer-time-current').text(currentTime);
-        this.progressBar.find('div.audioplayer-time-duration').text(durationTime);                
+        this.progressBar.find('div.audioplayer-time-duration').text(durationTime);
+        let difference = this.player.getDuration() - this.player.getCurrentTime();
+        if (this.loopSongMode && (difference < 1)) {
+            this.player.seekTo(0);
+        }
+
     }
 
     onPlayerStateChange(event) {
 
         if (event.data === YT.PlayerState.PLAYING) {
+
             console.log('playing');
             $("#menu div.mm-current").scrollTo('#menu li.music-item.mm-selected');
             this.currentMode = YT.PlayerState.PLAYING;
@@ -254,13 +263,20 @@ export class MusicPlayerComponent implements OnInit, AfterViewInit {
 
         }
         if (event.data === YT.PlayerState.ENDED) {
-            if (this.loopSongMode) {
-                this.playListEvent('loop');
-            } if (this.randomSongMode) {
-                this.playListEvent('random');
-            } else {
-                this.playListEvent('next');
-            }
+
+            this.player.throttleStateChange = this.player.throttleStateChange ? this.player.throttleStateChange : _.throttle(() => {
+                console.log('play event:' + this.loopSongMode);
+                if (this.loopSongMode) {
+                    // this.player.seekTo(0);
+                } if (this.randomSongMode) {
+                    this.playListEvent('random');
+                } else {
+                    this.playListEvent('next');
+                }
+            }, 1000, { leading: false });
+
+            this.player.throttleStateChange();
+
         }
         if (event.data === YT.PlayerState.PAUSED) {
             this.currentMode = YT.PlayerState.PAUSED;

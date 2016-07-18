@@ -13,6 +13,13 @@ export class StorageService {
         return false;
     }
 
+    isAdmin(): boolean {
+        if (this.get('admin')) {
+            return true;
+        }
+        return false;
+    }
+
     getSelectedCountries() {
         return this.get(this._selectedCountriesKey) ? this.get(this._selectedCountriesKey) : [];
     }
