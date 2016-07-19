@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.api.client.util.Lists;
 import com.google.api.client.util.Sets;
-import com.muzic.model.PlayList;
+import com.muzic.model.Genre;
 import com.muzic.model.Song;
 import com.muzic.model.Songs;
 import com.muzic.util.ApplicationUtil;
@@ -31,7 +29,7 @@ public class KpopServiceImpl implements MusicChartSerice {
 
 	private String playlistKey = "playlist/kr/top";
 	private String genrelistKey = "genre/kr/";
-	private String artistlistKey = "artists/kr/";
+	private String artistlistKey = "artists/";
 	@Value("${kpop.urls}")
 	private String[] kpopUrls;
 
@@ -52,50 +50,10 @@ public class KpopServiceImpl implements MusicChartSerice {
 
 	private List<Genre> genres;
 
-	private static class Genre {
-		private String cdType;
-		private String chartType;
-		private String key;
-		private String name;
-
-		public String getCdType() {
-			return cdType;
-		}
-
-		public void setCdType(String cdType) {
-			this.cdType = cdType;
-		}
-
-		public String getChartType() {
-			return chartType;
-		}
-
-		public void setChartType(String chartType) {
-			this.chartType = chartType;
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public void setKey(String key) {
-			this.key = key;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-	}
-
 	@Override
-	public Songs getArtistSongs(String artistId, Boolean useCache) {
+	public Songs getArtistSongs(String artistId, String country, boolean useCache) {
 		Songs songs = new Songs();
-
-		String artistKey = artistlistKey + artistId;
+		String artistKey = artistlistKey + country + "/" + artistId;
 
 		Optional<List<Song>> results = firebaseService.readList(artistKey, Song.class);
 		if (results.isPresent() && useCache) {
@@ -136,7 +94,12 @@ public class KpopServiceImpl implements MusicChartSerice {
 		songs.setSongs(songs.getSongs().stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
 		firebaseService.writeList(artistKey, songs.getSongs(), false);
 		return songs;
+	}
 
+	@Override
+	public Songs getArtistSongs(String artistId, Boolean useCache) {
+
+		return getArtistSongs(artistId, "kr", useCache);
 	}
 
 	@Scheduled(fixedRate = 21600000, initialDelay = 21600000)
@@ -212,7 +175,7 @@ public class KpopServiceImpl implements MusicChartSerice {
 		});
 
 		songs.setSongs(songs.getSongs().stream().filter(song -> song.getSongId() != null).collect(Collectors.toList()));
-		firebaseService.writeList(genreKey, songs.getSongs(), false);
+		firebaseService.writeList(genreKey, songs.getSongs(), true);
 		return songs;
 
 	}

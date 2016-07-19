@@ -31,5 +31,9 @@ public interface MusicChartSerice {
 		return null;
 	}
 
+	default Songs getArtistSongs(String artistId, String country, boolean useCache) {
+		return null;
+	}
+
 	
 }

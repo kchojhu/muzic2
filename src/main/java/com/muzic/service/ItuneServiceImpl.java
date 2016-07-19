@@ -55,7 +55,7 @@ public class ItuneServiceImpl implements MusicChartSerice {
 				Map<String, Object> countryMap = (Map<String, Object>) country;
 				String countryCode = countryMap.get("countryCode").toString();
 				System.out.println("countryCode" + countryCode);
-				if (!countryCode.equalsIgnoreCase("kr")) {
+				if (!countryCode.equalsIgnoreCase("kr") && !countryCode.equalsIgnoreCase("us")) {
 					getSongs(countryCode, useCache);					
 				}
 			});

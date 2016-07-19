@@ -38,6 +38,10 @@ public class MusicChartController {
 	@Qualifier("kPopService")
 	private MusicChartSerice kPopService;
 
+	@Autowired
+	@Qualifier("usPoPService")
+	private MusicChartSerice usPopService;
+
 	// @Autowired
 	// @Qualifier("usPoPService")
 	// private MusicChartSerice usPopService;
@@ -58,7 +62,7 @@ public class MusicChartController {
 
 	@Autowired
 	private YoutubeService youtubeService;
-	
+
 	@RequestMapping("/firebase")
 	public Map<String, Object> getFirebase(String dataRef) {
 		Optional<Map<String, Object>> result = firebaseService.read(dataRef);
@@ -71,9 +75,19 @@ public class MusicChartController {
 
 	@RequestMapping("/refreshplaylist")
 	public void refreshPlaylist() {
-		kPopService.refreshSongs();
-		playListService.refreshUSPlaylist();
-		ituneService.refreshSongs();
+		 kPopService.refreshSongs();
+		 playListService.refreshUSPlaylist();
+		 ituneService.refreshSongs();
+	}
+	
+	@RequestMapping("/refreshusplaylist")
+	public void refreshUsPlaylist() {
+		usPopService.refreshSongs();
+	}
+	
+	@RequestMapping("/refreshkrplaylist")
+	public void refreshKrPlaylist() {
+		 kPopService.refreshSongs();
 	}
 
 	@RequestMapping("/refreshitune")
@@ -142,47 +156,43 @@ public class MusicChartController {
 		}
 		return null;
 	}
-	
+
 	@RequestMapping("/artistSongs")
 	public Songs getArtistSongs(@RequestParam String country, @RequestParam String artistId) {
-		// if (NumberUtils.isNumber(country)) {
-		// return mellonArtistService.getSongs(country);
-		// }
 
-		switch (country) {
-		case "kr":
-			return kPopService.getArtistSongs(artistId, true);
-		// case "America":
-		// return usPopService.getSongs();
-		}
-		return null;
+		return kPopService.getArtistSongs(artistId, country, true);
 	}
 
 	@RequestMapping("/ituneTop100")
 	public Songs ituneTop100(@RequestParam String country) {
+		if (country.equals("us")) {
+			return usPopService.getSongs();
+		}
+
 		return ituneService.getSongs(country);
 
 	}
 
-	
 	@RequestMapping("/replaceSong")
 	public Song replaceSong(@RequestParam String title, @RequestParam String artist, @RequestParam String dataRef) {
 		String[] dataRefValues = dataRef.split("/");
-		String youtubeId = dataRefValues[dataRefValues.length -1];
+		String youtubeId = dataRefValues[dataRefValues.length - 1];
 		Song song = new Song();
 		song.setArtistName(artist);
 		song.setSongId(youtubeId);
 		song.setSongName(title);
 		Song replaceSong = youtubeService.replaceSong(song);
-		
+
 		if (replaceSong == null) {
-			//delete
+			// delete
 			return null;
 		}
-		
+
 		Map<String, Object> searchMap = Maps.newHashMap();
 		searchMap.put("songId", youtubeId);
-		Optional<String> updateDataRef = firebaseService.findDataRefWith(String.join("/",(String[])ArrayUtils.subarray(dataRefValues, 0, dataRefValues.length - 2)), searchMap);
+		Optional<String> updateDataRef = firebaseService.findDataRefWith(
+				String.join("/", (String[]) ArrayUtils.subarray(dataRefValues, 0, dataRefValues.length - 2)),
+				searchMap);
 
 		updateDataRef.ifPresent(v -> {
 			Map<String, Object> updateMap = Maps.newHashMap();
@@ -190,9 +200,8 @@ public class MusicChartController {
 
 			firebaseService.update(v, updateMap);
 		});
-		
-		
-		return replaceSong;		
+
+		return replaceSong;
 	}
 
 	@RequestMapping("/genre")
@@ -200,6 +209,8 @@ public class MusicChartController {
 		switch (country) {
 		case "korea":
 			return kPopService.getGenre(genreName, true);
+		case "america":
+			return usPopService.getGenre(genreName, true);
 		}
 		return null;
 	}
