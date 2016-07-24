@@ -136,15 +136,22 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         }, timeoutWait);
     }
 
-    replaceSong(event:AppEvent) {
+    replaceSong(event?: AppEvent) {
         let currentSong = this._menu.find('li.music-item.mm-selected');
         let title = currentSong.find('div.title').text();
         let artist = currentSong.find('div.artist').text();
-        let dataRef = currentSong.find('a').attr('href').split('/').slice(2).join('/');
+        let aLink = currentSong.find('a');
+        let aHref = aLink.attr('href');
+        let aHrefValues = aHref.split('/');
+        let dataRef = aHrefValues.slice(1).join('/');
+        let youtubeReplaceId = aHrefValues[aHrefValues.length - 1];
         this._playlistService.replaceSong(title, artist, dataRef).subscribe(song => {
-            this._applicationService.applicationEventEmitter.emit({ type: 'player', action: 'play', data: { youtubeId: song.songId, dataRef: dataRef } });
-        }, (error)=> {
-            this.selectNextSong({action:"", type: "", data:{command:'next'}});
+            currentSong.attr('data-youtubeid', song.songId);
+            aLink.attr('href', aHref.replace(youtubeReplaceId, song.songId));
+            aLink.click();
+            // this._applicationService.applicationEventEmitter.emit({ type: 'player', action: 'play', data: { youtubeId: song.songId, dataRef: dataRef } });
+        }, (error) => {
+            this.selectNextSong({ action: "", type: "", data: { command: 'next' } });
         });
     }
 
@@ -170,7 +177,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                 break;
             case 'replaceSong':
                 this.replaceSong();
-            break;
+                break;
             case 'loop':
                 this._menu.find('li.music-item.mm-selected').find('a').trigger('click');
                 break;
@@ -245,7 +252,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
                     country.artists = new Array<Artist>();
                     _.each(_.keys(menu.artists[country.countryCode]), (key) => {
                         let artistMap: any = menu.artists[country.countryCode][key];
-                        let artist:Artist = {name: artistMap.name, id:artistMap.id, country: country.countryCode};
+                        let artist: Artist = { name: artistMap.name, id: artistMap.id, country: country.countryCode };
                         country.artists.push(artistMap);
                     });
                 }

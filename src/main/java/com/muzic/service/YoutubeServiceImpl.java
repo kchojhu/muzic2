@@ -193,10 +193,6 @@ public class YoutubeServiceImpl implements YoutubeService {
 			firebaseService.push(invalidYoutubeIdsRef, song.getSongId());
 			invalidYoutubeIdsList.clear();;
 		}
-		Song replaceSong = getSong(song);
-		if (replaceSong.getSongId().equals(replaceYoutubeId)) {
-			return null;
-		}
 		
 		return getSong(song);
 	}

@@ -160,7 +160,7 @@ public class MusicChartController {
 	@RequestMapping("/artistSongs")
 	public Songs getArtistSongs(@RequestParam String country, @RequestParam String artistId) {
 
-		return kPopService.getArtistSongs(artistId, country, true);
+		return kPopService.getArtistSongs(artistId, country, false);
 	}
 
 	@RequestMapping("/ituneTop100")
