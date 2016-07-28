@@ -146,7 +146,7 @@ export class MenuComponent implements AfterViewInit, OnInit, AfterViewChecked {
         let dataRef = aHrefValues.slice(1).join('/');
         let youtubeReplaceId = aHrefValues[aHrefValues.length - 1];
         this._playlistService.replaceSong(title, artist, dataRef).subscribe(song => {
-            currentSong.attr('data-youtubeid', song.songId);
+            currentSong.attr('data-youtubeId', song.songId);
             aLink.attr('href', aHref.replace(youtubeReplaceId, song.songId));
             aLink.click();
             // this._applicationService.applicationEventEmitter.emit({ type: 'player', action: 'play', data: { youtubeId: song.songId, dataRef: dataRef } });
