@@ -39,7 +39,7 @@ public class ItuneServiceImpl implements MusicChartSerice {
 
 
 //	@Scheduled(fixedRate = 3600000)
-	@Scheduled(fixedRate = 21600000,initialDelay=21600000)
+	@Scheduled(fixedRate = 81600000,initialDelay=81600000)
 	public void refreshSongsInterval() {
 //		System.out.println("refresh");
 		refreshSongs(false);

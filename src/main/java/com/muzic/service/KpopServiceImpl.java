@@ -102,7 +102,7 @@ public class KpopServiceImpl implements MusicChartSerice {
 		return getArtistSongs(artistId, "kr", useCache);
 	}
 
-	@Scheduled(fixedRate = 21600000, initialDelay = 21600000)
+	@Scheduled(fixedRate = 41600000, initialDelay = 41600000)
 	@Override
 	public void refreshSongs() {
 		getSongs(false);

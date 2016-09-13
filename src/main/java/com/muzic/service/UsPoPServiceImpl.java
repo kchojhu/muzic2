@@ -45,7 +45,7 @@ public class UsPoPServiceImpl implements MusicChartSerice {
 	@Autowired
 	private YoutubeService youtubeService;
 
-	@Scheduled(fixedRate = 25600000, initialDelay = 25600000)
+	@Scheduled(fixedRate = 41600000, initialDelay = 41600000)
 	@Override
 	public void refreshSongs() {
 		getGenreConfigruation().stream().forEach(genre -> {
